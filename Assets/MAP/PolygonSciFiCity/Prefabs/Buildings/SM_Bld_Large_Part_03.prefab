@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 33747247526034164}
   - component: {fileID: 23657141190418496}
   - component: {fileID: 64356626783262518}
+  - component: {fileID: 5982888748802152191}
   m_Layer: 0
   m_Name: SM_Bld_Large_Part_03
   m_TagString: Untagged
@@ -103,6 +104,28 @@ MeshCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 43328068501325424, guid: 64092cf11f56a7a4ab270acce095882c, type: 2}
+--- !u!64 &5982888748802152191
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788266281613662}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 22902f62b42c53c438fc7e2c16554e0a, type: 3}

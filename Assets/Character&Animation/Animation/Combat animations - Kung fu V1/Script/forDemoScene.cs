@@ -1,20 +1,18 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 public class forDemoScene : MonoBehaviour
 {
-
     private Animator animator;
     private AnimationClip currentState;
     private float timechange;
 
     public float timeChangeAnimation = 5;
-    public int animationNumber=0;
+    public int animationNumber = 0;
     public AnimationClip[] animationsClip;
     public TextMesh text;
-
 
     // Start is called before the first frame update
     void Start()
@@ -28,9 +26,12 @@ public class forDemoScene : MonoBehaviour
     {
         if (currentState == newState) return;
 
+#if UNITY_EDITOR
+        // Sử dụng AnimationUtility chỉ khi trong môi trường Editor
         AnimationClipSettings tSettings = AnimationUtility.GetAnimationClipSettings(newState);
         tSettings.loopTime = true;
         AnimationUtility.SetAnimationClipSettings(newState, tSettings);
+#endif
 
         text.text = newState.name;
 
@@ -48,7 +49,7 @@ public class forDemoScene : MonoBehaviour
         }
         else
         {
-            if (animationNumber<animationsClip.Length-1)
+            if (animationNumber < animationsClip.Length - 1)
             {
                 animationNumber++;
             }
@@ -60,9 +61,6 @@ public class forDemoScene : MonoBehaviour
             ChangeAnimationState(animationsClip[animationNumber]);
 
             timechange = timeChangeAnimation;
-
         }
-
-        
     }
 }

@@ -33,7 +33,7 @@ namespace Synty.AnimationBaseLocomotion.Samples
         [SerializeField]
         private bool _isLockedOn;
         [SerializeField]
-        private float _mouseSensitivity = 5f;
+        private float _mouseSensitivity = 1f;
         [SerializeField]
         private float _cameraDistance = 5f;
         [SerializeField]
@@ -45,9 +45,9 @@ namespace Synty.AnimationBaseLocomotion.Samples
         [SerializeField]
         private Vector2 _cameraTiltBounds = new Vector2(-10f, 45f);
         [SerializeField]
-        private float _positionalCameraLag = 1f;
+        private float _positionalCameraLag = 5f;
         [SerializeField]
-        private float _rotationalCameraLag = 1f;
+        private float _rotationalCameraLag = 5f;
         private float _cameraInversion;
 
         private InputReader _inputReader;
