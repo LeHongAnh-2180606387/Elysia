@@ -1,0 +1,11 @@
+GUI và UI: đã có thanh máu, thể lực, giáp và mini map 
+(vô folder có file hướng dẫn chi tiết cách gắn)
+
+Sound: Có 2 âm thanh có thể chọn 1 âm thanh or 2 âm thanh đều được
+Ví dụ
+Đấm 1 là âm thanh 1
+Đấm 2 là âm thanh 2
+
+OR
+Toàn bộ animation combat set up đúng 1 âm thanh
+  

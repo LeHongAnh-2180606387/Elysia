@@ -1,0 +1,28 @@
+Base Move New ( nhấp nhanh )
+	- A + Ctrl: Traversal_Movement_CartWheelLeft
+	- D + Ctrl: Traversal_Movement_CartWheelRight
+	- S + Ctrl: Traversal_Movement_Backhandspring_WholeSequence
+
+Crouch Kick (nhân vật ngồi xuống hoàn toàn)
+	- Ctrl + Chuột phải: lower_kick02
+
+Crouch Kick (trước khi nhân vật ngồi xuống)
+	- Ctrl + Chuột phải: combo5
+
+Crouch Punch (nhân vật ngồi xuống hoàn toàn)	
+	- Ctrl + Chuột trái: lower_punch01
+
+Crouch Punch (trước khi nhân vật ngồi xuống)
+	- Ctrl + Chuột trái: combo7
+
+Đá chân trái
+	- W + chuột phải: AmineSAADI@SWITCH_KICK
+
+Đánh trước
+	- W + chuột trái: SPINNING BACK FIST
+
+Di chuyển trong thế thủ (Move idle)
+	- MOVE BACK 0.5m ROOT MOTION
+	- MOVE FORWARD 0.5m ROOT MOTION
+	- MOVE LEFT 0.5m ROOT MOTION
+	- MOVE RIGHT 0.5m ROOT MOTION

@@ -1,0 +1,7 @@
+
+Canvas (Chứa mini map, Máu, Thể lực, Giáp gắn vô Main Player)
+Status UI (Nhấn phím C để hiển thị Status nhân vật gán vô MainPlayer)
+
+Lưu ý
++ Giáp là thanh đang đè lên thanh máu á
+

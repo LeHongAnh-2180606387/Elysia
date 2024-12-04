@@ -1,0 +1,4 @@
+Nhớ cài Visual Effect Graph để dùng
+
+Gắn cái prefab TakeDamage vào để test
+
