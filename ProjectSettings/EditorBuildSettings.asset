@@ -5,30 +5,33 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/UI/UiGame.unity
-    guid: 92cbc7e0bec58d94fad6f67cc0844a1c
-  - enabled: 1
+    guid: 7ec362842565b8947bd03fa30b813286
+  - enabled: 0
     path: Assets/Scenes/UI/MenuGame.unity
-    guid: 24436f53a5622954a938cb91b88d1e8f
-  - enabled: 1
+    guid: 46ba15a6871d57a4e8063a00ed4ec21b
+  - enabled: 0
     path: Assets/Scenes/UI/ChoseMainCharacter.unity
-    guid: 5df19b9758a0efc449957773d759369d
-  - enabled: 1
+    guid: 3ad31732e0c227c44ad03bb9d04dc098
+  - enabled: 0
     path: Assets/Scenes/UI/Login.unity
-    guid: a3c497df20cd7b542aac562d8b395a37
-  - enabled: 1
+    guid: 68bedcea7fde0a343b73299eb6ff5962
+  - enabled: 0
     path: Assets/Scenes/UI/Online.unity
-    guid: 2f481a54e4915644e94f7563b5d1f1b2
-  - enabled: 1
+    guid: 5120d97a64204b148847ad026c10cd46
+  - enabled: 0
     path: Assets/Scenes/UI/setting.unity
-    guid: 2fb300c36f94c4e489fe4db3aca4e1e3
-  - enabled: 1
+    guid: e6325c6bfb00d2d4bbfe62e5c448f25a
+  - enabled: 0
     path: Assets/Scenes/UI/SignIn.unity
-    guid: e2d968705096ba841ae0d294c6fa3f96
+    guid: e6927f5d1f7008847b1dab4ad6b43ba5
   - enabled: 1
     path: Assets/Scenes/City.unity
     guid: 212fb896dd725174d817313c226bc24a
+  - enabled: 0
+    path: Assets/Scenes/New Scene.unity
+    guid: f1788efd4faf1624295a97ce716b8f19
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7,
       type: 2}
