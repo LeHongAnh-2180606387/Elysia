@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - IaCar
+  - CinemachineTarget
+  - Blocks
+  - Marcador
+  - Stop
+  - NPC Support
   layers:
   - Default
   - TransparentFX
