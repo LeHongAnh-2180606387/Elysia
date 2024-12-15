@@ -32,6 +32,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/New Scene.unity
     guid: f1788efd4faf1624295a97ce716b8f19
+  - enabled: 0
+    path: Assets/Scenes/Start Game Scene.unity
+    guid: 44b3020b113b7114ea2cff38de546b43
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7,
       type: 2}
