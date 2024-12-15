@@ -10,11 +10,12 @@ TagManager:
   - Marcador
   - Stop
   - NPC Support
+  - Esquina
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - 
