@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -12,9 +12,14 @@ namespace StarterAssets
 		public Vector2 look;
 		public bool jump;
 		public bool sprint;
+		public bool crouch;
+		public bool walk;
+		public bool punch;
+		public bool kick;
+
+		// Shooter
 		public bool aim;
 		public bool shoot;
-
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -31,7 +36,7 @@ namespace StarterAssets
 
 		public void OnLook(InputValue value)
 		{
-			if(cursorInputForLook)
+			if (cursorInputForLook)
 			{
 				LookInput(value.Get<Vector2>());
 			}
@@ -46,10 +51,26 @@ namespace StarterAssets
 		{
 			SprintInput(value.isPressed);
 		}
+		public void OnCrouch(InputValue value)
+		{
+			CrouchInput(value.isPressed);
+		}
+		public void OnWalk(InputValue value)
+		{
+			WalkInput(value.isPressed);
+		}
+		public void OnPunch(InputValue value)
+		{
+			PunchInput(value.isPressed);
+		}
+		public void OnKick(InputValue value)
+		{
+			KickInput(value.isPressed);
+		}
 
         public void OnAim(InputValue value)
         {
-            AimInput(value.isPressed);
+			AimInput(value.isPressed);
         }
 
         public void OnShoot(InputValue value)
@@ -62,7 +83,7 @@ namespace StarterAssets
         public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
-		} 
+		}
 
 		public void LookInput(Vector2 newLookDirection)
 		{
@@ -78,11 +99,27 @@ namespace StarterAssets
 		{
 			sprint = newSprintState;
 		}
-		
-		public void AimInput(bool newAimState)
+		public void CrouchInput(bool newCrouchState)
 		{
-			aim = newAimState;
+			crouch = newCrouchState;
 		}
+		public void WalkInput(bool newWalkState)
+		{
+			walk = newWalkState;
+		}
+		public void PunchInput(bool newPunchState)
+		{
+			punch = newPunchState;
+		}
+		public void KickInput(bool newKickState)
+		{
+			kick = newKickState;
+		}
+
+        public void AimInput(bool newAImState)
+        {
+            aim = newAImState;
+        }
 
         public void ShootInput(bool newShootState)
         {
@@ -96,18 +133,8 @@ namespace StarterAssets
 
 		private void SetCursorState(bool newState)
 		{
-            Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = !newState;
-        }
-
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                cursorLocked = !cursorLocked; // Đổi trạng thái khóa của con trỏ
-                SetCursorState(cursorLocked);
-            }
-        }
-    }
+			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
+		}
+	}
 	
 }

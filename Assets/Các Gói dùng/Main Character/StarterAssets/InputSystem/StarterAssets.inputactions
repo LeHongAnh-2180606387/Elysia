@@ -43,7 +43,7 @@
                 },
                 {
                     "name": "SprintAlt",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "ac4ab960-83d9-4538-b656-08bf2fa051a6",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -52,7 +52,7 @@
                 },
                 {
                     "name": "Crouch",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "cf7ae0fd-3f53-41c2-a9d9-caaf270e4af7",
                     "expectedControlType": "Button",
                     "processors": "",
@@ -61,8 +61,26 @@
                 },
                 {
                     "name": "Walk",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "f94a036b-d38b-46d7-a322-51e5a73a2f5b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Punch",
+                    "type": "PassThrough",
+                    "id": "ec2a3aac-626e-4c28-ad6d-16d0025abc34",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Kick",
+                    "type": "PassThrough",
+                    "id": "ce211144-7295-42d5-ae97-c61d939c36f5",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -71,7 +89,7 @@
                 {
                     "name": "Aim",
                     "type": "PassThrough",
-                    "id": "98558811-0702-4d8e-85f0-fa7a38138064",
+                    "id": "9e16946e-49b5-4ab9-8f2f-fedc633634a1",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -80,7 +98,7 @@
                 {
                     "name": "Shoot",
                     "type": "Button",
-                    "id": "f84d6131-bf38-4316-aeb2-06b51af001c5",
+                    "id": "1d6250be-4641-46f2-87f0-f7a52f4ff18a",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -267,7 +285,7 @@
                 {
                     "name": "",
                     "id": "367112bb-76b2-49e4-ac4f-21b2513c09b9",
-                    "path": "<Keyboard>/leftCtrl",
+                    "path": "<Keyboard>/ctrl",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
@@ -288,7 +306,29 @@
                 },
                 {
                     "name": "",
-                    "id": "9240d0b8-7768-4ab4-9ad7-d1d8bcc89426",
+                    "id": "2552f3d2-d823-4b45-a3f5-aa62396e0382",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Punch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4e77df27-865f-4cf3-a576-2b066055b045",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "Kick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "237f9a6e-580e-46ac-955a-e65df1ef67df",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
@@ -299,7 +339,7 @@
                 },
                 {
                     "name": "",
-                    "id": "264bcbbf-aa54-45b9-b44a-d1e06f457f61",
+                    "id": "83678e87-4257-4be1-93e0-be559217fbbe",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
