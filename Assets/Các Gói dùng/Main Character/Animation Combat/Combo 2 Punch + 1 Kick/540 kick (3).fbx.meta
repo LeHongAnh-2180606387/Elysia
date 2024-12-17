@@ -39,8 +39,8 @@ ModelImporter:
       name: 540 kick
       takeName: 540 kick
       internalID: 0
-      firstFrame: 0
-      lastFrame: 96
+      firstFrame: 10
+      lastFrame: 63
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
