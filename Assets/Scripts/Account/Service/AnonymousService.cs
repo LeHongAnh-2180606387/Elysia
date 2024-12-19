@@ -19,9 +19,11 @@ namespace Systems.Account.Service
             if (!SaveLoadManager.Instance.saveLoadLocalService.CheckAnonymousFolderExists())
             {
                 AccountData playerData = new AccountData();
+                playerData.name = "Anonymous";
                 await SaveLoadManager.Instance.SaveData(playerData);
             }
-
+            //SaveLoadManager
+            //GameManager
             Observer.Instance.Notify("onLoginAccount");
         }
     }

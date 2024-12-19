@@ -26,13 +26,18 @@ namespace Systems.Account.Manager
         public AnonymousService anonymousAccount = new AnonymousService();
         public AccountData accountData;
         public bool IsModified = false;
-        protected override void Awake()
+        protected override async void Awake()
         {
             base.Awake();
+            if (!UnityServices.State.Equals(ServicesInitializationState.Initialized))
+            {
+                await UnityServices.InitializeAsync();
+            }
+            accountService.SetAttributeAccount();
         }
         public void Start()
         {
-            accountService.SetAttributeAccount();
+
 
             // Action OnPlayerLogin ? <skip login feature UI>
         }

@@ -5,33 +5,36 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
+    path: Assets/Scenes/New Scene.unity
+    guid: f1788efd4faf1624295a97ce716b8f19
+  - enabled: 1
     path: Assets/Scenes/UI/UiGame.unity
     guid: 7ec362842565b8947bd03fa30b813286
-  - enabled: 0
-    path: Assets/Scenes/UI/MenuGame.unity
-    guid: 46ba15a6871d57a4e8063a00ed4ec21b
-  - enabled: 0
-    path: Assets/Scenes/UI/ChoseMainCharacter.unity
-    guid: 3ad31732e0c227c44ad03bb9d04dc098
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/UI/Login.unity
     guid: 68bedcea7fde0a343b73299eb6ff5962
-  - enabled: 0
-    path: Assets/Scenes/UI/Online.unity
-    guid: 5120d97a64204b148847ad026c10cd46
-  - enabled: 0
-    path: Assets/Scenes/UI/setting.unity
-    guid: e6325c6bfb00d2d4bbfe62e5c448f25a
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/UI/SignIn.unity
     guid: e6927f5d1f7008847b1dab4ad6b43ba5
   - enabled: 1
+    path: Assets/Scenes/UI/MenuGame.unity
+    guid: 46ba15a6871d57a4e8063a00ed4ec21b
+  - enabled: 1
+    path: Assets/Scenes/UI/ChoseMainCharacter.unity
+    guid: 3ad31732e0c227c44ad03bb9d04dc098
+  - enabled: 1
+    path: Assets/Scenes/UI/Online.unity
+    guid: 5120d97a64204b148847ad026c10cd46
+  - enabled: 1
+    path: Assets/Scenes/UI/setting.unity
+    guid: e6325c6bfb00d2d4bbfe62e5c448f25a
+  - enabled: 1
     path: Assets/Scenes/City.unity
     guid: 212fb896dd725174d817313c226bc24a
-  - enabled: 0
-    path: Assets/Scenes/New Scene.unity
-    guid: f1788efd4faf1624295a97ce716b8f19
+  - enabled: 1
+    path: Assets/Scenes/Loading Scence/Loading Scence.unity
+    guid: caae8f752d8f4ea49928caf647dbe3ac
   - enabled: 0
     path: Assets/Scenes/Start Game Scene.unity
     guid: 44b3020b113b7114ea2cff38de546b43

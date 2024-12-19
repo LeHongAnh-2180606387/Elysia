@@ -24,6 +24,7 @@ namespace Systems.SaveLoad.Manager
         public List<string> listNameFailedSaves = new List<string>();
         public string dataPath;
         public SaveLoadLocalService saveLoadLocalService;
+        public bool isLoggedIn;
         private void OnEnable()
         {
             Observer.Instance.AddObserver("onLoginAccount", OnLogin);
@@ -67,6 +68,7 @@ namespace Systems.SaveLoad.Manager
         }
         private async void OnApplicationQuit()
         {
+            Debug.Log("SaveData");
             await SaveData();
         }
         private async void OnLogin(object[] obj)
@@ -79,11 +81,10 @@ namespace Systems.SaveLoad.Manager
             // # Check kiểm tra tính toàn vẹn của version file save in local
 
             // Nếu có thời gian sẽ triển khai backup
-            if (SignInResult.AccountType == AccountType.Anonymous)
+            if ( SignInResult.AccountType == AccountType.Anonymous)
             {
                 AccountManager.Instance.accountData = await saveLoadLocalService.LoadAsync<AccountData>(SignInResult.IdPlayer, "account");
                 PlayerDataManager.Instance.playerData = await saveLoadLocalService.LoadAsync<PlayerData>(SignInResult.IdPlayer, "playerData");
-                Debug.Log($"SaveLoadManager :{PlayerDataManager.Instance.playerData.position}");
                 return;
             }
             // Check đối chiếu kiểm tra version save mới nhất giữa Local và Cloud
@@ -135,7 +136,7 @@ namespace Systems.SaveLoad.Manager
         {
             await RetryFailedSaves();
             var changes = saveLoadLocalService.trackableService.GetAllChanges();
-
+            isLoggedIn = SignInResult.AccountType == AccountType.Player;
             foreach (var change in changes)
             {
                 if (change.Value == true && saveActions.TryGetValue(change.Key, out var saveAction))
@@ -168,7 +169,6 @@ namespace Systems.SaveLoad.Manager
         }
         private async Task SaveAccountData()
         {
-            bool isLoggedIn = SignInResult.AccountType == AccountType.Player;
             await saveLoadLocalService.SaveAsync<AccountData>(SignInResult.IdPlayer, "account", AccountManager.Instance.accountData);
             AccountManager.Instance.IsModified = false;
             try
@@ -185,8 +185,6 @@ namespace Systems.SaveLoad.Manager
         }
         private async Task SavePlayerData()
         {
-            bool isLoggedIn = SignInResult.AccountType == AccountType.Player;
-            
             await saveLoadLocalService.SaveAsync<PlayerData>(SignInResult.IdPlayer, "playerData", PlayerDataManager.Instance.playerData);
 
             PlayerDataManager.Instance.isModified = false;

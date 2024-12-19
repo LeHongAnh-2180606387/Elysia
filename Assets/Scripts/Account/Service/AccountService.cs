@@ -51,7 +51,7 @@ namespace Systems.Account.Service
         {
             if (AuthenticationService.Instance.IsSignedIn)
                 return AuthenticationService.Instance.PlayerId;
-            if(isManagerByFolder == true && SaveLoadManager.Instance.saveLoadLocalService.CheckAnonymousFolderExists())
+            if (isManagerByFolder == true && SaveLoadManager.Instance.saveLoadLocalService.CheckAnonymousFolderExists())
                 return "AnonymousAccount";
             if (isManagerByFolder == false && SaveLoadManager.Instance.saveLoadLocalService.CheckAnonymousFileExists())
                 return "AnonymousAccount";
@@ -73,17 +73,27 @@ namespace Systems.Account.Service
         {
             SignInResult.AccountType = CheckAccountType(isManagerByFolder);
             SignInResult.IdPlayer = FindPlayerId();
+            if (SignInResult.AccountType == AccountType.Player)
+            {
+                //SaveLoadManager
+                //GameManager
+                Observer.Instance.Notify("onLoginAccount");
+                return;
+            }
             if (SignInResult.AccountType == AccountType.Anonymous)
             {
                 AnonymousService anonymousService = new AnonymousService();
                 await anonymousService.SignInAnonymous();
                 return;
             }
-            if (SignInResult.AccountType == AccountType.Player)
-            {
-                Observer.Instance.Notify("onLoginAccount");
-                return;
-            }
+        }
+        public async void SetAttributeAnonymousAccount()
+        {
+            SignInResult.AccountType = AccountType.Anonymous;
+            SignInResult.IdPlayer = "AnonymousAccount";
+            AnonymousService anonymousService = new AnonymousService();
+            await anonymousService.SignInAnonymous();
+            return;
         }
     }
 }

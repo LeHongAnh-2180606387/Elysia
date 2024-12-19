@@ -1,34 +1,41 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Systems.SaveLoad.Service;
 using Unity.Services.Core;
 using System;
 using Systems.Account.Manager;
-using Systems.Account.Model;
-using Systems.Account.Enum;
-using Systems.SaveLoad.Manager;
 using Systems.Scriptable.Events;
 using Systems.Hero.Manager;
 public class GameManager : PersistentSingleton<GameManager>
 {
     public bool isPlayingInMap = false;
-    protected override void Awake()
+    public string beforeScene = "UiGame";
+    public string afterScene = "UiGame";
+    protected override async void Awake()
     {
         base.Awake();
+        if (!UnityServices.State.Equals(ServicesInitializationState.Initialized))
+        {
+            await UnityServices.InitializeAsync();
+        }
     }
     private void Start()
     {
 
     }
+    private void Update()
+    {
+
+    }
     private void OnEnable()
     {
+        //
         Observer.Instance.AddObserver("onLoginAccount", OnLogin);
         Observer.Instance.AddObserver("onLogoutAccount", OnLogout);
         Observer.Instance.AddObserver("onDeleteAccount", OnDeleteAccount);
 
+        //
         Observer.Instance.AddObserver("onNetworkDisable", OnNetworkDisable);
         Observer.Instance.AddObserver("onNetworkAvailable", OnNetworkAvailable);
+
     }
 
     private void OnDisable()
@@ -65,15 +72,16 @@ public class GameManager : PersistentSingleton<GameManager>
     {
         throw new NotImplementedException();
     }
-    private void PlayGame()
+    public void PlayGame()
     {
-        
+        // PlayerDataManager
         Observer.Instance.Notify("onPlayGame");
         isPlayingInMap = true;
         // Load Scene Map Hero Playing
     }
     public void LeaveGame()
     {
+        // PlayerDataManager
         isPlayingInMap = false;
         Observer.Instance.Notify("onLeaveGame");
         // Leave Scene Map Hero Playing
