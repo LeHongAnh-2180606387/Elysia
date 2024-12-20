@@ -89,7 +89,8 @@ public class CarEnterExitSystem : MonoBehaviour
 
         // Chuyển đổi camera
         PlayerCam.gameObject.SetActive(true); // Bật camera của player khi ra khỏi xe
-        CarCam.gameObject.SetActive(false); // Tắt camera xe khi ra khỏi xeisDriving = false; // Cập nhật trạng thái không lái xe
+        CarCam.gameObject.SetActive(false); // Tắt camera xe khi ra khỏi xe
+        isDriving = false; // Cập nhật trạng thái không lái xe
     }
 
     void OnTriggerStay(Collider col)

@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public class ThirdPersonShooterController : MonoBehaviour {
 
-    [SerializeField] private CinemachineVirtualCamera aimVirtualCamera;
+    /*[SerializeField] private CinemachineVirtualCamera aimVirtualCamera;
     [SerializeField] private float normalSensitivity;
     [SerializeField] private float aimSensitivity;
     [SerializeField] private LayerMask aimColliderLayerMask = new LayerMask();
@@ -58,7 +58,7 @@ public class ThirdPersonShooterController : MonoBehaviour {
             if (starterAssetsInputs.shoot)
             {
 
-                /*// Hit Scan Shoot
+                *//*// Hit Scan Shoot
                 if (hitTransform != null)
                 {
                     // Hit something
@@ -72,7 +72,7 @@ public class ThirdPersonShooterController : MonoBehaviour {
                         // Hit something else
                         Instantiate(vfxHitRed, mouseWorldPosition, Quaternion.identity);
                     }
-                }*/
+                }*//*
                 //
                 //*
                 // Projectile Shoot
@@ -92,6 +92,6 @@ public class ThirdPersonShooterController : MonoBehaviour {
 
 
 
-    }
+    }*/
 
 }

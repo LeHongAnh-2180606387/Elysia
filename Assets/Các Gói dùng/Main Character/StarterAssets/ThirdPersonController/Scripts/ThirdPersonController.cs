@@ -1,6 +1,10 @@
-﻿using UnityEngine;
+﻿
+using System.Collections;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
+using UnityEngine.UI;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -80,11 +84,6 @@ namespace StarterAssets
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
 
-        public float Sensitivity = 1.0f;
-        
-        
-
-
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
@@ -108,10 +107,6 @@ namespace StarterAssets
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
 
-
-        // Shooter
-        private bool _rotateOnMove = true;
-
 #if ENABLE_INPUT_SYSTEM 
         private PlayerInput _playerInput;
 #endif
@@ -129,7 +124,17 @@ namespace StarterAssets
         private float _lastPressTime = 0f;
         private bool _isSprinting = false;
 
+        private GUIManager guiManager;
 
+        //player
+        private float damagebyplayer = 50f;
+        private float armor = 10f;
+        private float currenthealth;
+        private float maxHealth;
+        public Image damageImage;
+        public AudioSource audioSource;  // Reference to the AudioSource component
+        public AudioClip damageSound;  // The sound effect to play when taking damage
+        private bool isTakingDamage = false;
         private bool IsCurrentDeviceMouse
         {
             get
@@ -149,6 +154,12 @@ namespace StarterAssets
             if (_mainCamera == null)
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+            }
+            guiManager = FindObjectOfType<GUIManager>();
+
+            if (guiManager == null)
+            {
+                Debug.LogError("GUIManager not found in the scene!");
             }
         }
 
@@ -170,6 +181,22 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
+            enemy = GameObject.FindWithTag("Enemy").transform;
+            if (guiManager != null)
+            {
+                currenthealth = guiManager.currentHealth;
+                maxHealth = guiManager.maxHealth;
+            }
+
+            if (damageImage != null)
+            {
+                // Đảm bảo bắt đầu với ảnh trong suốt
+                damageImage.canvasRenderer.SetAlpha(0f);
+            }
+            if (audioSource != null)
+            {
+                audioSource.playOnAwake = false;  // Don't play sound automatically at start
+            }
         }
 
         private void Update()
@@ -181,6 +208,8 @@ namespace StarterAssets
             Move();
             HandleCrouch();
             HandleCombo();
+            DealDamage();
+
         }
 
         private void LateUpdate()
@@ -220,8 +249,8 @@ namespace StarterAssets
                 //Don't multiply mouse input by Time.deltaTime;
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier * Sensitivity;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier * Sensitivity;
+                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
+                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
             }
 
             // clamp our rotations so our values are limited 360 degrees
@@ -233,34 +262,56 @@ namespace StarterAssets
                 _cinemachineTargetYaw, 0.0f);
         }
 
+        //stamina
+        private float StaminaDrainRate = 5f;
+        private float StaminaRegenRate = 3f;
+        private float currentStamina;
+        private float maxStamina;
         private void Move()
         {
-            // set target speed based on move speed, sprint speed and if sprint is pressed
-            float targetSpeed = _input.sprint ? SprintSpeed : _input.walk ? (WalkSpeed + 1.0f) : MoveSpeed;
+            if (guiManager != null)
+            {
+                currentStamina = guiManager.currentStamina;
+                maxStamina = guiManager.maxStamina;
+            }
+            // Tính toán tốc độ mục tiêu dựa trên trạng thái chạy nước rút, đi bộ hoặc di chuyển bình thường
+            float targetSpeed = (_input.sprint && currentStamina > 0) ? SprintSpeed
+                            : _input.walk ? (WalkSpeed + 1.0f)
+                            : MoveSpeed;
 
-
-            // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
-
-            // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is no input, set the target speed to 0
             if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+            // Trừ stamina khi chạy nước rút
+            if (_input.sprint && _input.move != Vector2.zero && currentStamina > 0)
+            {
+                currentStamina -= StaminaDrainRate * Time.deltaTime;
+                currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina); // Đảm bảo không dưới 0
+            }
+            else if (!_input.sprint && currentStamina < maxStamina) // Hồi phục stamina khi không chạy nước rút
+            {
+                currentStamina += StaminaRegenRate * Time.deltaTime;
+                currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina); // Đảm bảo không vượt quá tối đa
+            }
 
-            // a reference to the players current horizontal velocity
+            // Vô hiệu hóa chạy nước rút khi stamina bằng 0
+            if (currentStamina <= 0)
+            {
+                _input.sprint = false; // Tắt trạng thái sprint
+            }
+            if (guiManager != null)
+            {
+                guiManager.currentStamina = currentStamina;
+            }
+            // (Phần còn lại của logic di chuyển không thay đổi)
             float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
             float speedOffset = 0.1f;
             float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
-            // accelerate or decelerate to target speed
+            // Tăng tốc hoặc giảm tốc để đạt được target speed
             if (currentHorizontalSpeed < targetSpeed - speedOffset ||
                 currentHorizontalSpeed > targetSpeed + speedOffset)
             {
-                // creates curved result rather than a linear one giving a more organic speed change
-                // note T in Lerp is clamped, so we don't need to clamp our speed
                 _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
                     Time.deltaTime * SpeedChangeRate);
-
-                // round speed to 3 decimal places
                 _speed = Mathf.Round(_speed * 1000f) / 1000f;
             }
             else
@@ -271,41 +322,30 @@ namespace StarterAssets
             _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
             if (_animationBlend < 0.01f) _animationBlend = 0f;
 
-            // normalise input direction
             Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
-            // note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-            // if there is a move input rotate player when the player is moving
             if (_input.move != Vector2.zero)
             {
                 _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                                  _mainCamera.transform.eulerAngles.y;
+                                    _mainCamera.transform.eulerAngles.y;
                 float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
                     RotationSmoothTime);
-
-                // rotate to face input direction relative to camera position
-                if (_rotateOnMove)
-                {
-                    transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
-                }
-
-                
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
             }
-
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
-            // move the player
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                             new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+                                new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
-            // update animator if using character
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
             }
+
         }
+
         private bool isCrouchKeyPressed = false; // Biến để theo dõi trạng thái nhấn phím cúi
 
         private void HandleCrouch()
@@ -375,12 +415,12 @@ namespace StarterAssets
         // Các biến combo cho punch
         private int punchStep = 0;             // Biến đếm combo punch
         private float punchTimer = 0f;         // Bộ đếm thời gian cho combo punch
-        private const float punchDelay = 1.0f; // Thời gian tối đa giữa các đòn punch combo
+        private const float punchDelay = 0.5f; // Thời gian tối đa giữa các đòn punch combo
 
         // Các biến combo cho kick
         private int kickStep = 0;             // Biến đếm combo kick
         private float kickTimer = 0f;         // Bộ đếm thời gian cho combo kick
-        private const float kickDelay = 1.5f; // Thời gian tối đa giữa các đòn kick combo
+        private const float kickDelay = 0.6f; // Thời gian tối đa giữa các đòn kick combo
 
         private bool isAttacking = false;     // Trạng thái đang tấn công (cả punch và kick)
         private bool isCombat = false;        // Trạng thái combat
@@ -567,26 +607,12 @@ namespace StarterAssets
                         _animator.SetBool("Punch1", true);
                         _animator.SetBool("Punch2", false);
                         _animator.SetBool("Punch3", false);
-                        if (_input.kick)
-                        {
-                            _animator.SetBool("Kick1", true);
-                            _animator.SetBool("Kick2", false);
-                            _animator.SetBool("Kick3", false);
-
-                        }
                     }
                     else if (punchStep == 2)
                     {
                         _animator.SetBool("Punch1", false);
                         _animator.SetBool("Punch2", true);
                         _animator.SetBool("Punch3", false);
-                        if (_input.kick)
-                        {                          
-                            _animator.SetBool("Kick1", true);
-                            _animator.SetBool("Kick2", false);
-                            _animator.SetBool("Kick3", false);
-                            
-                        }
                     }
                     else if (punchStep == 3)
                     {
@@ -609,14 +635,14 @@ namespace StarterAssets
                         _animator.SetBool("Kick1", true);
                         _animator.SetBool("Kick2", false);
                         _animator.SetBool("Kick3", false);
-                        
+
                     }
                     else if (kickStep == 2)
                     {
                         _animator.SetBool("Kick1", false);
                         _animator.SetBool("Kick2", true);
                         _animator.SetBool("Kick3", false);
-                        
+
 
                     }
 
@@ -625,7 +651,7 @@ namespace StarterAssets
                         _animator.SetBool("Kick1", false);
                         _animator.SetBool("Kick2", false);
                         _animator.SetBool("Kick3", true);
-                        
+
                         kickStep = 0; // Reset combo kick sau đòn thứ 3
                     }
                 }
@@ -661,13 +687,13 @@ namespace StarterAssets
             {
                 // Nếu phím W đang được nhấn, bỏ qua việc giảm resetCombatTimer
                 if (_input.move.x != 0 || _input.move.y != 0) // Kiểm tra phím W
-                {  
+                {
                     isCombat = false;
                     _animator.SetBool("isCombat", isCombat);
                     resetCombatTimer = combatResetDelay;
                     // Giữ nguyên thời gian reset combat
                 }
-                else if(_input.move.x == 0 || _input.move.y == 0)
+                else if (_input.move.x == 0 || _input.move.y == 0)
                 {
                     // Nếu W không được nhấn, tiếp tục đếm ngược để thoát combat
                     resetCombatTimer -= Time.deltaTime;
@@ -728,6 +754,27 @@ namespace StarterAssets
         {
             _animator.SetBool("isLowerPunchBasic", false);
             isAttacking = false;
+        }
+        public void GainXP(float xpAmount)
+        {
+            guiManager.currentXP += xpAmount; // Cộng thêm XP
+            Debug.Log("Gained XP: " + xpAmount);
+
+            CheckLevelUp();
+        }
+
+        // Kiểm tra xem có đủ XP để lên level hay không
+        private void CheckLevelUp()
+        {
+            while (guiManager.currentXP >= guiManager.xpToNextLevel) // Có thể lên nhiều level cùng lúc
+            {
+                guiManager.currentXP -= guiManager.xpToNextLevel; // Trừ XP đã dùng để lên level
+                guiManager.currentXP++;
+                guiManager.currentLevel++;// Tăng level
+                guiManager.xpToNextLevel *= 1.2f;      // Tăng XP cần thiết cho level tiếp theo (ví dụ tăng 20%)
+
+                Debug.Log("Level Up! New Level: " + guiManager.currentXP);
+            }
         }
         private void JumpAndGravity()
         {
@@ -798,6 +845,195 @@ namespace StarterAssets
             }
         }
 
+        public bool IsTakingDamage()
+        {
+            return isTakingDamage; // Trả về trạng thái nhận sát thương
+        }
+
+        public void TakeDamage(float damage, GameObject enemy)
+        {
+            // Lấy tag từ đối tượng enemy
+            string enemyTag = enemy.tag;
+
+            Debug.Log($"Incoming Damage: {damage}, Enemy Tag: {enemyTag}, Current Health: {currenthealth}, Armor: {armor}");
+
+            // Áp dụng logic dựa trên tag
+            if (enemyTag == "Enemy")
+            {
+                TakeDamageFromEnemy(damage); // Giảm sát thương bởi giáp
+                Debug.Log($"Damage after armor (Enemy): {damage}");
+            }
+            else if (enemyTag == "boss")
+            {
+                TakeDamageFromBoss(damage); // Giảm ít giáp hơn đối với boss
+                Debug.Log($"Damage after armor (Boss): {damage}");
+            }
+            else
+            {
+                Debug.LogWarning($"Unknown enemy tag: {enemyTag}");
+            }
+
+            if (damageImage != null)
+            {
+                StartCoroutine(ShowDamageEffect());
+            }
+
+            if (audioSource != null && damageSound != null)
+            {
+                audioSource.PlayOneShot(damageSound);  // Play the damage sound effect
+            }
+        }
+
+        private Coroutine damageEffectCoroutine;
+        private IEnumerator ShowDamageEffect()
+        {
+            // Set damage image color to red and make it fully opaque
+            damageImage.color = Color.red;  // Set the color to red
+            damageImage.canvasRenderer.SetAlpha(1f);  // Fully visible
+
+            // Wait for a short period to show the effect
+            yield return new WaitForSeconds(0.5f);
+
+            // Fade the damage image back to transparent
+            float elapsedTime = 0f;
+            float fadeDuration = 0.5f;
+            while (elapsedTime < fadeDuration)
+            {
+                float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);  // Fade from visible to invisible
+                damageImage.canvasRenderer.SetAlpha(alpha);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            // Ensure it is fully invisible at the end
+            damageImage.canvasRenderer.SetAlpha(0f);
+        }
+        public void TakeDamageFromEnemy(float damage)
+        {
+            damage = Mathf.Max(damage - armor, 0); // Giảm sát thương bởi giáp
+            isTakingDamage = true; // Đặt trạng thái nhận sát thương là true
+            _animator.SetBool("isTakeDamage", true);
+            Debug.Log("TakeDamageFromEnemy called, isTakeDamage set to true");
+
+            // Sau một khoảng thời gian, có thể đặt lại trạng thái nhận sát thương
+            StartCoroutine(ResetDamageState());
+
+
+        }
+
+        private IEnumerator ResetDamageState()
+        {
+            // Ví dụ: Sau 0.5 giây reset lại trạng thái
+            yield return new WaitForSeconds(0.1f);
+            isTakingDamage = false; // Đặt lại trạng thái nhận sát thương
+            _animator.SetBool("isTakeDamage", false); // Cập nhật lại Animator
+            Debug.Log("Resetting damage state, isTakingDamage set to false");
+        }
+
+        public void TakeDamageFromBoss(float damage)
+        {
+            //damage = Mathf.Max((damage*2) - armor, 0); // Giảm ít giáp hơn đối với boss
+            //ApplyDamage(damage);
+            float originalDamage = damage;
+            damage = Mathf.Max(damage - (armor * 0.5f), 0); // Tăng sát thương 50% và trừ giáp
+            Debug.Log($"Original Damage: {originalDamage}, After Armor: {damage}");
+            ApplyDamage(damage);
+            _animator.SetBool("isTakeDamage", true);
+            Debug.Log("TakeDamageFromEnemy called, isTakeDamage set to true");
+        }
+        private void ApplyDamage(float damage)
+        {
+            currenthealth -= damage;
+            currenthealth = Mathf.Clamp(currenthealth, 0, maxHealth);
+
+            Debug.Log($"Current Health after damage: {currenthealth}");
+
+            // Cập nhật GUI (nếu có)
+            if (guiManager != null)
+            {
+                guiManager.currentHealth = currenthealth;
+            }
+
+            // Kiểm tra nếu máu <= 0
+            if (currenthealth <= 0)
+            {
+                Die();
+            }
+        }
+   
+
+   
+        private void Die()
+        {
+            Debug.Log("Player has died!");
+            // Logic thêm vào: ví dụ tắt GameObject, hiển thị màn hình game over, v.v.
+            gameObject.SetActive(false);
+        }
+        private float lastAttackTime = 0f;  // Lưu thời gian lần tấn công cuối
+        public float attackCooldown = 1f;
+        public float attackRange = 2f;        // Phạm vi tấn công
+        public Transform enemy;
+        public void DealDamage()
+        {
+            if (_input.punch || _input.kick)
+            {
+                // Kiểm tra cooldown
+                if (Time.time - lastAttackTime >= attackCooldown)
+                {
+                    // Tìm tất cả đối tượng với tag "Enemy" hoặc "Boss" trong phạm vi attackRange
+                    Collider[] enemiesInRange = Physics.OverlapSphere(transform.position, attackRange);
+
+                    // Duyệt qua tất cả các đối tượng tìm thấy trong phạm vi
+                    foreach (var enemyCollider in enemiesInRange)
+                    {
+                        // Kiểm tra nếu đối tượng có tag "Enemy" hoặc "Boss"
+                        if (enemyCollider.CompareTag("Enemy") || enemyCollider.CompareTag("boss"))
+                        {
+                            // Lấy component EnemyController từ enemy
+                            EnemyController enemyHealth = enemyCollider.GetComponent<EnemyController>();
+                            if (enemyHealth != null)
+                            {
+                                // Tính hướng từ player đến enemy
+                                Vector3 directionToEnemy = (enemyCollider.transform.position - transform.position).normalized;
+
+                                // Tính góc giữa hướng của player và hướng đến enemy
+                                float angle = Vector3.Angle(transform.forward, directionToEnemy);
+
+                                // Kiểm tra nếu góc giữa hướng của player và hướng đến enemy <= 45 độ
+                                if (angle <= 45f)
+                                {
+                                    // Gây damage cho enemy hoặc boss tùy theo tag
+                                    
+                                        // Nếu là enemy, gây damage thông thường
+                                        enemyHealth.TakeDamage(damagebyplayer);
+                                        Debug.Log("Enemyhealth :" + enemyHealth.enemyHealth);
+                                    // In ra thông tin máu của enemy sau khi nhận damage
+                                }
+
+                                else
+                                {
+                                    Debug.Log("Enemy is not within 45 degrees in front of the player.");
+                                }
+                            }
+                        }
+                    }
+
+                    // Cập nhật thời gian tấn công
+                    lastAttackTime = Time.time;
+                }
+                else
+                {
+                    Debug.Log("Attack is on cooldown.");
+                }
+            }
+        }
+        // Coroutine để đặt lại trạng thái tấn công sau một khoảng thời gian (tránh việc tính đến sát thương nhiều lần)
+        private IEnumerator ResetAttackCooldown()
+        {
+            yield return new WaitForSeconds(0.5f); // Chờ 0.5s trước khi cho phép tấn công lại
+            isAttacking = false;
+        }
+    
         private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
         {
             if (lfAngle < -360f) lfAngle += 360f;
@@ -837,17 +1073,6 @@ namespace StarterAssets
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
-        }
-
-
-        public void SetSensitivity(float newSensitivity)
-        {
-            Sensitivity = newSensitivity;
-        }
-
-        public void SetRotateOnMove (bool newRotateOnMove)
-        {
-            _rotateOnMove = newRotateOnMove;
         }
     }
 }

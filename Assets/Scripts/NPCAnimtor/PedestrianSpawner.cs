@@ -16,7 +16,6 @@ public class PedestrianSpawner : MonoBehaviour
 
     IEnumerator Spawn()
     {
-        yield return new WaitForSeconds(1f);
         // Lưu tất cả các waypoint vào danh sách
         List<Transform> availableWaypoints = new List<Transform>();
         for (int i = 0; i < transform.childCount; i++)
