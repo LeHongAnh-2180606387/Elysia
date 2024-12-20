@@ -4,24 +4,28 @@ using UnityEngine;
 using DialogueEditor;
 using Unity.VisualScripting;
 using StarterAssets;
+using UnityEngine.SceneManagement;
 public class DialogueEditorNPC : MonoBehaviour
 {
-
-    [SerializeField]
-    public NPCConversation myConversation;
+    [SerializeField] public NPCConversation myConversation;
     private bool dialogueInProgress = false;
     private bool conversationDone = false;
+
     // Tham chiếu đến các thành phần của người chơi để vô hiệu hóa/kích hoạt lại
     public GameObject playerGameObject;
-    public GameObject secretPlayer;
-    private ThirdPersonController playerController;
+    public ThirdPersonController playerController;
     private bool playerInRange = false;
-    //public TextDisplay textDisplay;
+    public GameObject buttonF;
+
+
+    private ScenePositionSpawn scenePositionSpawn = new ScenePositionSpawn();
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             playerInRange = true;
+            buttonF.SetActive(true);
         }
     }
 
@@ -30,23 +34,35 @@ public class DialogueEditorNPC : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = false;
+            buttonF.SetActive(false);
         }
     }
 
-
+    public void Start()
+    {
+        buttonF.SetActive(false);
+        if (playerController == null && SceneManager.GetActiveScene().name == "City" || SceneManager.GetActiveScene().name == "Training")
+        {
+            StartCoroutine(FindPlayer());
+        }
+    }
+    IEnumerator FindPlayer()
+    {
+        yield return new WaitForSeconds(4f);
+        if (playerGameObject == null)
+            playerGameObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerController == null)
+        {
+            playerController = playerGameObject.GetComponent<ThirdPersonController>();
+        }
+    }
     //&& !conversationDone
     void Update()
     {
-        // Kiểm tra xem người chơi có ở trong phạm vi, nhấn phím E và không có cuộc hội thoại nào đang diễn ra
-        if (playerInRange && Input.GetKeyDown(KeyCode.E) && !dialogueInProgress)
+        // Kiểm tra xem người chơi có ở trong phạm vi, nhấn phím F và không có cuộc hội thoại nào đang diễn ra
+        if (myConversation == true && playerInRange && Input.GetKeyDown(KeyCode.F) && !dialogueInProgress)
         {
             StartConversation();
-            /*if (AttributeManager.Instance.isRunningConversation == true)
-            {
-                // Thiết lập lại các giá trị thuộc tính từ AttributeManager trước khi bắt đầu cuộc hội thoại
-                ConversationManager.Instance.SetBool("isRead", AttributeManager.Instance.isRead);
-                ConversationManager.Instance.SetBool("isTrue", AttributeManager.Instance.isTrue);
-            }*/
         }
     }
     void StartConversation()
@@ -58,12 +74,10 @@ public class DialogueEditorNPC : MonoBehaviour
         dialogueInProgress = true;
 
         // Vô hiệu hóa PlayerController nếu đã tham chiếu thành công
-        /*if (playerController != null)
+        if (playerController != null)
         {
             playerController.enabled = false;
-            playerController.canMove = false;// Vô hiệu hóa khả năng di chuyển
-            playerController.StopMovement(); // Đặt movement về 0 ngay lập tức
-        }*/
+        }
 
         // Chờ cho đến khi cuộc hội thoại kết thúc, sau đó sẽ kích hoạt lại các cơ chế điều khiển
         StartCoroutine(WaitForConversationEnd());
@@ -82,23 +96,16 @@ public class DialogueEditorNPC : MonoBehaviour
         conversationDone = true;
 
         // Kích hoạt lại PlayerController nếu đã tham chiếu thành công
-       /* if (playerController != null)
+        if (playerController != null)
         {
             playerController.enabled = true;
-            playerController.canMove = true; // Kích hoạt lại khả năng di chuyển
-        }*/
+        }
 
         // Cập nhật các thuộc tính sau khi cuộc hội thoại kết thúc
         /*AttributeManager.Instance.isRead = ConversationManager.Instance.GetBool("isRead");
         AttributeManager.Instance.isTrue = ConversationManager.Instance.GetBool("isTrue");
         AttributeManager.Instance.isRunningConversation = true;
         textDisplay.StartDisplayTextAndLoadScene();*/
-    }
-
-    void Awake()
-    {
-        // Lấy tham chiếu đến PlayerController khi GameObject khởi động
-        playerController = playerGameObject.GetComponent<ThirdPersonController>();
     }
 }
 

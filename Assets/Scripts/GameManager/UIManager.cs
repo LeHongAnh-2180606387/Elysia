@@ -7,6 +7,7 @@ using Systems.Hero.Manager;
 using Systems.Hero.Model;
 using Systems.Scriptable.Events;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,6 +39,8 @@ public class UIManager : MonoBehaviour
 
     public void Start()
     {
+        sceneNow = SceneManager.GetActiveScene();
+        // StartCoroutine(StartConnectUIStatus());
         if (sceneNow.name == "City" || sceneNow.name == "Training")
         {
             labHealthBar = GameObject.Find("labHealthBar").GetComponent<TextMeshProUGUI>();
@@ -74,7 +77,6 @@ public class UIManager : MonoBehaviour
     }
     public void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.C))
         {
             if (sceneNow.name == "City" || sceneNow.name == "Training")
@@ -96,30 +98,39 @@ public class UIManager : MonoBehaviour
     }
     public void LateUpdate()
     {
-        if (labHealthBar != null)
+        if (sceneNow.name == "City" || sceneNow.name == "Training")
         {
-            labHealthBar.text = PlayerDataManager.Instance.health.ToString();
-            labEnergyBar.text = PlayerDataManager.Instance.energy.ToString();
-            labShieldBar.text = PlayerDataManager.Instance.shield.ToString();
-        }
-        if (sliderHealthBar != null)
-        {
-            sliderHealthBar.GetComponent<Slider>().value = sliderValueHealthBar;
-            sliderEnergyBar.GetComponent<Slider>().value = sliderValueEnergyBar;
-            sliderShieldBar.GetComponent<Slider>().value = sliderValueShieldBar;
-        }
-        if (labPointHP != null)
-        {
-            labPointHP.text = PlayerDataManager.Instance.playerData.maxHealth.ToString();
-            labPointPower.text = PlayerDataManager.Instance.playerData.attack.ToString();
-            labPointEnergy.text = PlayerDataManager.Instance.playerData.maxEnergy.ToString();
-            labPointDefense.text = PlayerDataManager.Instance.playerData.defense.ToString();
-            labPointMoney.text = PlayerDataManager.Instance.playerData.coin.ToString();
+            if (labHealthBar != null)
+            {
+                labHealthBar.text = PlayerDataManager.Instance.health.ToString();
+                labEnergyBar.text = PlayerDataManager.Instance.energy.ToString();
+                labShieldBar.text = PlayerDataManager.Instance.shield.ToString();
+            }
+            if (sliderHealthBar != null)
+            {
+                sliderHealthBar.GetComponent<Slider>().value = sliderValueHealthBar;
+                sliderEnergyBar.GetComponent<Slider>().value = sliderValueEnergyBar;
+                sliderShieldBar.GetComponent<Slider>().value = sliderValueShieldBar;
+            }
+            if (labPointHP != null)
+            {
+                labPointHP.text = PlayerDataManager.Instance.playerData.maxHealth.ToString();
+                labPointPower.text = PlayerDataManager.Instance.playerData.attack.ToString();
+                labPointEnergy.text = PlayerDataManager.Instance.playerData.maxEnergy.ToString();
+                labPointDefense.text = PlayerDataManager.Instance.playerData.defense.ToString();
+                labPointMoney.text = PlayerDataManager.Instance.playerData.coin.ToString();
+            }
         }
     }
     // Basic UI
     public void SwapScene(string nameAfterScene)
     {
+        GameManager.Instance.afterScene = nameAfterScene;
+        SceneManager.LoadScene(nameAfterScene);
+    }
+    public void SwapSceneAtPosition(string nameAfterScene, Vector3 position)
+    {
+        PlayerDataManager.Instance.UpdatePlayerPositionRotation(position);
         GameManager.Instance.afterScene = nameAfterScene;
         SceneManager.LoadScene(nameAfterScene);
     }

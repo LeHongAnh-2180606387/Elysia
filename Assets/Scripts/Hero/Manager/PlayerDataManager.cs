@@ -76,7 +76,7 @@ namespace Systems.Hero.Manager
             SaveLoadManager.Instance.saveLoadLocalService.trackableService.UpdateChange("playerData", true);
         }
 
-        private void UpdatePlayerPositionRotation(Vector3 position, Quaternion rotation)
+        public void UpdatePlayerPositionRotation(Vector3 position, Quaternion rotation = default)
         {
             playerData.position = position;
             playerData.rotation = rotation;
@@ -97,7 +97,7 @@ namespace Systems.Hero.Manager
         private IEnumerator ActivatePlayerHeroWithDelay()
         {
             // Đợi 3 giây
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(3f);
             
             // Đang chờ sử lý thuộc tính tương tác với Item
             health = playerData.maxHealth;
@@ -106,18 +106,31 @@ namespace Systems.Hero.Manager
             
             if (playerHero == null)
             {
-                if (playerData.scence != null)
-                {
-                    playerHero = Instantiate(prefabPlayerHero, playerData.position, playerData.rotation);
-                    Debug.Log($"PlayerHero: {playerHero != null}");
-                }
-                else
+                if (playerData.level == 0 && playerData.scence == "Training")
                 {
                     // Training Scene là Scene cho người mới chơi
-                    // Chưa chỉnh sửa
+                    // Đã sửa nhưng chưa thành công
+                    Debug.Log($"NewPlayer: {playerData.level} - {playerData.scence}");
+
                     ScenePositionSpawn scenePositionSpawn = new ScenePositionSpawn();
-                    // Vector3 vector3 = new Vector3(-21.310199737548829f, -0.010000050067901612f, -2.3771989345550539f);
-                    playerHero = Instantiate(prefabPlayerHero, scenePositionSpawn.getCityPosition(), Quaternion.identity);
+                    Debug.Log($"Position Spawn: {scenePositionSpawn.getTrainingNewPlayerPosition()}");
+                    
+                    playerData.position = scenePositionSpawn.getTrainingNewPlayerPosition();
+                    playerHero = Instantiate(prefabPlayerHero, scenePositionSpawn.getTrainingNewPlayerPosition(), Quaternion.identity);
+
+                    GameObject.FindGameObjectWithTag("Custence 0").SetActive(true);
+                }
+
+                if (playerData.level == 0 && playerData.scence != "Training")
+                {
+                    Debug.Log($"Test");
+                    Debug.Log($"PlayerDataManger: {playerData.position}");
+                    playerHero = Instantiate(prefabPlayerHero, playerData.position, playerData.rotation);
+                }
+                else if (playerData.scence != null)
+                {
+                    Debug.Log($"PlayerDataManger: {playerData.position}");
+                    playerHero = Instantiate(prefabPlayerHero, playerData.position, playerData.rotation);
                 }
             }
             if (playerData != null && playerHero != null)

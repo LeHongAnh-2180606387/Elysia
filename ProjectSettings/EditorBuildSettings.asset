@@ -35,6 +35,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Loading Scence/Loading Scence.unity
     guid: 00d101e91ae34f84faa013951b2af2c5
+  - enabled: 1
+    path: Assets/Scenes/Room.unity
+    guid: bc893aa1472109a408f7f7199efeaa67
+  - enabled: 1
+    path: Assets/Scenes/Training.unity
+    guid: 7c05256e6a1eefc4c836388d6971fb61
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7,
       type: 2}

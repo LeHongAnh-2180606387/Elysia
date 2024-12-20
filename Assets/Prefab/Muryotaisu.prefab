@@ -757,8 +757,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.5936213, y: 1.8819084, z: 2.7281501}
-  m_Center: {x: -0.11291443, y: 0.4409542, z: 0.06476}
+  m_Size: {x: 1.9559205, y: 1.2730098, z: 1.1023041}
+  m_Center: {x: -0.050785422, y: 0.7454035, z: 0.27054578}
 --- !u!114 &4731715850034195584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -773,7 +773,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myConversation: {fileID: 0}
   playerGameObject: {fileID: 0}
-  secretPlayer: {fileID: 0}
+  playerController: {fileID: 0}
+  buttonF: {fileID: 3295646149368774253, guid: c28c4609533604d4c8588e8721c7f799, type: 3}
 --- !u!1 &1565724477546812532
 GameObject:
   m_ObjectHideFlags: 0

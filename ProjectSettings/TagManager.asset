@@ -11,6 +11,8 @@ TagManager:
   - Stop
   - NPC Support
   - Esquina
+  - btnF
+  - Elevator
   layers:
   - Default
   - TransparentFX
