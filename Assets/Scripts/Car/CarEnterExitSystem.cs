@@ -25,15 +25,24 @@ public class CarEnterExitSystem : MonoBehaviour
         CarController.enabled = false;
         DriveUi.gameObject.SetActive(false);
         CarCam.SetActive(false); // Đảm bảo camera xe không hiển thị khi bắt đầu
-        PlayerCam.SetActive(true); // Đảm bảo camera của player hiển thị khi bắt đầu
         isDriving = false; // Ban đầu người chơi không lái xe
         CamCar.SetActive(false);
+        StartCoroutine(FindPlayer());
     }
 
+    IEnumerator FindPlayer()
+    {
+        yield return new WaitForSeconds(3f);
+        Player = GameObject.FindGameObjectWithTag("Player").transform;
+        Debug.Log(Player);
+        PlayerCam = GameObject.FindGameObjectWithTag("MainCamera");
+        Debug.Log(PlayerCam);
+        PlayerCam.SetActive(true); // Đảm bảo camera của player hiển thị khi bắt đầu
+    }
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F) && Candrive)
+        if (Input.GetKeyDown(KeyCode.F) && Candrive && Player != null)
         {
             if (!isDriving)
             {
@@ -80,9 +89,7 @@ public class CarEnterExitSystem : MonoBehaviour
 
         // Chuyển đổi camera
         PlayerCam.gameObject.SetActive(true); // Bật camera của player khi ra khỏi xe
-        CarCam.gameObject.SetActive(false); // Tắt camera xe khi ra khỏi xe
-
-        isDriving = false; // Cập nhật trạng thái không lái xe
+        CarCam.gameObject.SetActive(false); // Tắt camera xe khi ra khỏi xeisDriving = false; // Cập nhật trạng thái không lái xe
     }
 
     void OnTriggerStay(Collider col)
