@@ -36,10 +36,16 @@ public class EnemyController : MonoBehaviour
 
     // Reference to UI health bar (Image)
     public Image healthBarFill;
-            
+
     private bool isInitialized = false;
     private void Start()
     {
+        StartCoroutine(StartConnectPlayer());
+    }
+    IEnumerator StartConnectPlayer()
+    {
+        yield return new WaitForSeconds(4f);
+        player = GameObject.FindGameObjectWithTag("Player").transform;
         currentWaypoint = waypoints[Random.Range(0, waypoints.Count)];
         ChangeState(AISTATE.PATROL);
 
@@ -48,49 +54,53 @@ public class EnemyController : MonoBehaviour
         {
             healthBarFill.fillAmount = 1f;  // Full health bar
         }
-        if (!isInitialized && gameObject.CompareTag("boss"))
-        {
-            attackDamage *= 2;
-            enemyHealth *= 2;
-            enemyArmor *= 2;
-            xpReward *= 2;
-            isInitialized = true;
-        }
+        // if (!isInitialized && gameObject.CompareTag("boss"))
+        // {
+        //     attackDamage *= 2;
+        //     enemyHealth *= 2;
+        //     enemyArmor *= 2;
+        //     xpReward *= 2;
+        //     isInitialized = true;
+        // }
     }
 
-private void Update()
-{
-float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+    private void Update()
+    {
+        if (player != null)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
-// Check if the enemy should go into defensive mode (close to player)
-isDefensive = distanceToPlayer <= defensiveDistance;
+            // Check if the enemy should go into defensive mode (close to player)
+            isDefensive = distanceToPlayer <= defensiveDistance;
 
-// Vô hiệu hóa di chuyển khi ở trạng thái phòng thủ
-if (isDefensive)
-{
-enemy.isStopped = true; // Stop the NavMeshAgent
-enemy.velocity = Vector3.zero; // Ensure no movement occurs
-}
-else
-{
-// If not defensive, resume movement
-enemy.isStopped = false;
-}
+            // Vô hiệu hóa di chuyển khi ở trạng thái phòng thủ
+            if (isDefensive)
+            {
+                enemy.isStopped = true; // Stop the NavMeshAgent
+                enemy.velocity = Vector3.zero; // Ensure no movement occurs
+            }
+            else
+            {
+                // If not defensive, resume movement
+                enemy.isStopped = false;
+            }
 
-// Attack logic with cooldown when defensive
-if (isDefensive && Time.time >= lastAttackTime + attackCooldown && !isAttacking)
-{
-StartAttack();
-}
+            // Attack logic with cooldown when defensive
+            if (isDefensive && Time.time >= lastAttackTime + attackCooldown && !isAttacking)
+            {
+                StartAttack();
+            }
 
-// Update animator states
-animator.SetBool("isDefensive", isDefensive);
-animator.SetBool("isAttacking", isAttacking);
-}
+            // Update animator states
+            animator.SetBool("isDefensive", isDefensive);
+            animator.SetBool("isAttacking", isAttacking);
+        }
+
+    }
 
 
 
-public void ChangeState(AISTATE newState)
+    public void ChangeState(AISTATE newState)
     {
         StopAllCoroutines();
         enemyState = newState;
@@ -114,94 +124,94 @@ public void ChangeState(AISTATE newState)
         }
     }
 
-public IEnumerator ChaseState()
-{
-while (enemyState == AISTATE.CHASE)
-{
-    float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-    // If the enemy is close enough to attack the player, switch to attack state
-    if (distanceToPlayer <= distanceOffset)
+    public IEnumerator ChaseState()
     {
-        ChangeState(AISTATE.ATTACK);
-        yield break; // Exit the chase state and enter attack state
+        while (enemyState == AISTATE.CHASE)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+            // If the enemy is close enough to attack the player, switch to attack state
+            if (distanceToPlayer <= distanceOffset)
+            {
+                ChangeState(AISTATE.ATTACK);
+                yield break; // Exit the chase state and enter attack state
+            }
+
+            // Move towards the player
+            enemy.SetDestination(player.position);
+
+            // Smoothly rotate towards the player
+            Quaternion targetRotation = Quaternion.LookRotation(player.position - transform.position);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+
+            // Yield control for the next frame to keep updating
+            yield return null;
+        }
     }
 
-    // Move towards the player
-    enemy.SetDestination(player.position);
-
-    // Smoothly rotate towards the player
-    Quaternion targetRotation = Quaternion.LookRotation(player.position - transform.position);
-    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
-
-    // Yield control for the next frame to keep updating
-    yield return null;
-}
-}
 
 
-
-public IEnumerator AttackState()
-{
-while (enemyState == AISTATE.ATTACK)
-{
-    float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-    // Nếu người chơi ra ngoài phạm vi tấn công, chuyển sang trạng thái Chase
-    if (distanceToPlayer > distanceOffset)
+    public IEnumerator AttackState()
     {
-        ChangeState(AISTATE.CHASE);
-        yield break;
+        while (enemyState == AISTATE.ATTACK)
+        {
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+            // Nếu người chơi ra ngoài phạm vi tấn công, chuyển sang trạng thái Chase
+            if (distanceToPlayer > distanceOffset)
+            {
+                ChangeState(AISTATE.CHASE);
+                yield break;
+            }
+
+            // Kiểm tra nếu có thể tấn công
+            if (CanAttackPlayer())
+            {
+                // Quay về hướng người chơi để tấn công
+                Quaternion targetRotation = Quaternion.LookRotation(player.position - transform.position);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+
+                // Gây sát thương cho người chơi nếu có thể
+                DealDamageToPlayer();
+            }
+
+            // Chờ thời gian cooldown trước khi tấn công lại
+            yield return new WaitForSeconds(attackCooldown);
+        }
     }
-
-    // Kiểm tra nếu có thể tấn công
-    if (CanAttackPlayer())
-    {
-        // Quay về hướng người chơi để tấn công
-        Quaternion targetRotation = Quaternion.LookRotation(player.position - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
-
-        // Gây sát thương cho người chơi nếu có thể
-        DealDamageToPlayer();
-    }
-
-    // Chờ thời gian cooldown trước khi tấn công lại
-    yield return new WaitForSeconds(attackCooldown);
-}
-}
 
 
     public IEnumerator PatrolState()
     {
-    while (enemyState == AISTATE.PATROL)
-    {
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-        if (isDefensive)
+        while (enemyState == AISTATE.PATROL)
         {
-            yield return null; // Không thực hiện gì nếu đang thủ
-            continue;
+            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
+            if (isDefensive)
+            {
+                yield return null; // Không thực hiện gì nếu đang thủ
+                continue;
+            }
+
+            if (distanceToPlayer <= distanceOffset)
+            {
+                ChangeState(AISTATE.CHASE);
+                yield break;
+            }
+
+            enemy.SetDestination(currentWaypoint.position);
+
+            if (Vector3.Distance(transform.position, currentWaypoint.position) < distanceOffset)
+            {
+                currentWaypoint = waypoints[Random.Range(0, waypoints.Count)];
+            }
+
+            yield return null;
         }
-
-        if (distanceToPlayer <= distanceOffset)
-        {
-            ChangeState(AISTATE.CHASE);
-            yield break;
-        }
-
-        enemy.SetDestination(currentWaypoint.position);
-
-        if (Vector3.Distance(transform.position, currentWaypoint.position) < distanceOffset)
-        {
-            currentWaypoint = waypoints[Random.Range(0, waypoints.Count)];
-        }
-
-        yield return null;
     }
-   }
 
 
-public void StartAttack()
+    public void StartAttack()
     {
         if (!isAttacking)
         {
@@ -231,16 +241,16 @@ public void StartAttack()
                     // Normal enemy damage
                     playerHealth.TakeDamage(attackDamage, this.gameObject);
                 }
-                else if (gameObject.CompareTag("boss"))
-                {
-                    // Boss deals double damage
-                    playerHealth.TakeDamage(attackDamage, this.gameObject);
-                }
+                // else if (gameObject.CompareTag("boss"))
+                // {
+                //     // Boss deals double damage
+                //     playerHealth.TakeDamage(attackDamage, this.gameObject);
+                // }
             }
         }
     }
 
-// Method to check if player is within attack angle
+    // Method to check if player is within attack angle
     private bool CanAttackPlayer()
     {
         Vector3 directionToPlayer = (player.position - transform.position).normalized;
@@ -276,28 +286,28 @@ public void StartAttack()
                 Die();
             }
         }
-        else if (gameObject.CompareTag("boss"))
-        {
-            // Apply damage to boss (double armor effect)
-            enemyHealth -= (damage - enemyArmor);  // Boss armor is stronger
-            enemyHealth = Mathf.Clamp(enemyHealth, 0, 1000f);  // Clamp health from 0 to max health
+        // else if (gameObject.CompareTag("boss"))
+        // {
+        //     // Apply damage to boss (double armor effect)
+        //     enemyHealth -= (damage - enemyArmor);  // Boss armor is stronger
+        //     enemyHealth = Mathf.Clamp(enemyHealth, 0, 1000f);  // Clamp health from 0 to max health
 
-            if (healthBarFill != null)
-            {
-                healthBarFill.fillAmount = enemyHealth / 1000f;  // Update health bar for boss
-            }
+        //     if (healthBarFill != null)
+        //     {
+        //         healthBarFill.fillAmount = enemyHealth / 1000f;  // Update health bar for boss
+        //     }
 
-            // Set isTakeDamage parameter to true when the boss takes damage
-            animator.SetBool("isTakeDamage", true);
+        //     // Set isTakeDamage parameter to true when the boss takes damage
+        //     animator.SetBool("isTakeDamage", true);
 
-            // Reset the isTakeDamage parameter after a delay (time duration of the damage animation)
-            StartCoroutine(ResetTakeDamage());
+        //     // Reset the isTakeDamage parameter after a delay (time duration of the damage animation)
+        //     StartCoroutine(ResetTakeDamage());
 
-            if (enemyHealth <= 0)
-            {
-                Die();
-            }
-        }
+        //     if (enemyHealth <= 0)
+        //     {
+        //         Die();
+        //     }
+        // }
     }
 
     // Coroutine to reset the 'isTakeDamage' parameter after a short delay
@@ -326,11 +336,11 @@ public void StartAttack()
                     playerController.GainXP(xpReward);
                     Debug.Log("Player gained XP from Enemy: " + xpReward);
                 }
-                else if (gameObject.CompareTag("boss"))
-                {
-                    playerController.GainXP(xpReward); // Boss gives double XP
-                    Debug.Log("Player gained XP from Boss: " + (xpReward));
-                }
+                // else if (gameObject.CompareTag("boss"))
+                // {
+                //     playerController.GainXP(xpReward); // Boss gives double XP
+                //     Debug.Log("Player gained XP from Boss: " + (xpReward));
+                // }
             }
         }
 

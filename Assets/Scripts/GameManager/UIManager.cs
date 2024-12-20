@@ -7,6 +7,7 @@ using Systems.Hero.Manager;
 using Systems.Hero.Model;
 using Systems.Scriptable.Events;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,7 +39,9 @@ public class UIManager : MonoBehaviour
 
     public void Start()
     {
-        if (sceneNow.name == "City" || sceneNow.name == "Training")
+        sceneNow = SceneManager.GetActiveScene();
+        // StartCoroutine(StartConnectUIStatus());
+        if (sceneNow.name == "City" || sceneNow.name == "Training" || sceneNow.name == "Room")
         {
             labHealthBar = GameObject.Find("labHealthBar").GetComponent<TextMeshProUGUI>();
             labEnergyBar = GameObject.Find("labEnergyBar").GetComponent<TextMeshProUGUI>();
@@ -54,7 +57,7 @@ public class UIManager : MonoBehaviour
         Observer.Instance.Notify("onSceneName", sceneNow.name);
 
         // Bổ sung thêm các Scene có chức năng điều khiển người chơi
-        if (sceneNow.name == "City" || sceneNow.name == "Training")
+        if (sceneNow.name == "City" || sceneNow.name == "Training" || sceneNow.name == "Room")
         {
             GameManager.Instance.PlayGame();
         }
@@ -65,7 +68,7 @@ public class UIManager : MonoBehaviour
     }
     public void FixedUpdate()
     {
-        if (sceneNow.name == "City" || sceneNow.name == "Training")
+        if (sceneNow.name == "City" || sceneNow.name == "Training" || sceneNow.name == "Room")
         {
             sliderValueHealthBar = (float)PlayerDataManager.Instance.health / PlayerDataManager.Instance.playerData.maxHealth;
             sliderValueEnergyBar = (float)PlayerDataManager.Instance.energy / PlayerDataManager.Instance.playerData.maxEnergy;
@@ -74,10 +77,9 @@ public class UIManager : MonoBehaviour
     }
     public void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.C))
         {
-            if (sceneNow.name == "City" || sceneNow.name == "Training")
+            if (sceneNow.name == "City" || sceneNow.name == "Training" || sceneNow.name == "Room")
             {
                 // Chuyển đổi trạng thái hoạt động của bảng trạng thái
                 statusPanel.SetActive(!statusPanel.activeSelf);
@@ -96,30 +98,39 @@ public class UIManager : MonoBehaviour
     }
     public void LateUpdate()
     {
-        if (labHealthBar != null)
+        if (sceneNow.name == "City" || sceneNow.name == "Training")
         {
-            labHealthBar.text = PlayerDataManager.Instance.health.ToString();
-            labEnergyBar.text = PlayerDataManager.Instance.energy.ToString();
-            labShieldBar.text = PlayerDataManager.Instance.shield.ToString();
-        }
-        if (sliderHealthBar != null)
-        {
-            sliderHealthBar.GetComponent<Slider>().value = sliderValueHealthBar;
-            sliderEnergyBar.GetComponent<Slider>().value = sliderValueEnergyBar;
-            sliderShieldBar.GetComponent<Slider>().value = sliderValueShieldBar;
-        }
-        if (labPointHP != null)
-        {
-            labPointHP.text = PlayerDataManager.Instance.playerData.maxHealth.ToString();
-            labPointPower.text = PlayerDataManager.Instance.playerData.attack.ToString();
-            labPointEnergy.text = PlayerDataManager.Instance.playerData.maxEnergy.ToString();
-            labPointDefense.text = PlayerDataManager.Instance.playerData.defense.ToString();
-            labPointMoney.text = PlayerDataManager.Instance.playerData.coin.ToString();
+            if (labHealthBar != null)
+            {
+                labHealthBar.text = PlayerDataManager.Instance.health.ToString();
+                labEnergyBar.text = PlayerDataManager.Instance.energy.ToString();
+                labShieldBar.text = PlayerDataManager.Instance.shield.ToString();
+            }
+            if (sliderHealthBar != null)
+            {
+                sliderHealthBar.GetComponent<Slider>().value = sliderValueHealthBar;
+                sliderEnergyBar.GetComponent<Slider>().value = sliderValueEnergyBar;
+                sliderShieldBar.GetComponent<Slider>().value = sliderValueShieldBar;
+            }
+            if (labPointHP != null)
+            {
+                labPointHP.text = PlayerDataManager.Instance.playerData.maxHealth.ToString();
+                labPointPower.text = PlayerDataManager.Instance.playerData.attack.ToString();
+                labPointEnergy.text = PlayerDataManager.Instance.playerData.maxEnergy.ToString();
+                labPointDefense.text = PlayerDataManager.Instance.playerData.defense.ToString();
+                labPointMoney.text = PlayerDataManager.Instance.playerData.coin.ToString();
+            }
         }
     }
     // Basic UI
     public void SwapScene(string nameAfterScene)
     {
+        GameManager.Instance.afterScene = nameAfterScene;
+        SceneManager.LoadScene(nameAfterScene);
+    }
+    public void SwapSceneAtPosition(string nameAfterScene, Vector3 position)
+    {
+        PlayerDataManager.Instance.UpdatePlayerPositionRotation(position);
         GameManager.Instance.afterScene = nameAfterScene;
         SceneManager.LoadScene(nameAfterScene);
     }

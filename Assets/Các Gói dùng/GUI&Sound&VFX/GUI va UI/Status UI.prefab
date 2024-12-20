@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 4662820530501192860}
   - component: {fileID: 5799560081225058203}
   m_Layer: 0
-  m_Name: Text (TMP) (1)
+  m_Name: labPointEnergy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1439,7 +1439,7 @@ GameObject:
   - component: {fileID: 5967150488567095224}
   - component: {fileID: 6286132691238831930}
   m_Layer: 0
-  m_Name: Text (TMP) (4)
+  m_Name: labPointHP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1846,7 +1846,7 @@ GameObject:
   - component: {fileID: 1862372416237170711}
   - component: {fileID: 8849552165450775901}
   m_Layer: 0
-  m_Name: Text (TMP)
+  m_Name: labPointMoney
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2376,7 +2376,7 @@ GameObject:
   - component: {fileID: 9138867088486389285}
   - component: {fileID: 4659730292871854496}
   m_Layer: 0
-  m_Name: Text (TMP) (3)
+  m_Name: labPointPower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2513,7 +2513,6 @@ GameObject:
   - component: {fileID: 6814914067864561276}
   - component: {fileID: 4649451667217381144}
   - component: {fileID: 1513631336165243316}
-  - component: {fileID: 3507672267807301229}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -2604,19 +2603,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &3507672267807301229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9018249647265700926}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d43948aea14622845b7efb94cafd139f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  statusPanel: {fileID: 5280038627692670317}
 --- !u!1 &9143878191596161138
 GameObject:
   m_ObjectHideFlags: 0
@@ -2763,7 +2749,7 @@ GameObject:
   - component: {fileID: 5243052089551674031}
   - component: {fileID: 7184434569693756896}
   m_Layer: 0
-  m_Name: Text (TMP) (2)
+  m_Name: labPointDefense
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

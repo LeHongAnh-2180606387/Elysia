@@ -65,7 +65,7 @@ MonoBehaviour:
   shield: 0
   energy: 0
   isModified: 0
-  prefabPlayerHero: {fileID: 639409456840160540, guid: c117c27e9e725c543b3ee7a0abe295be,
+  prefabPlayerHero: {fileID: 8578468969780068698, guid: 7997efd0f6c2859429046939ae28156f,
     type: 3}
   playerHero: {fileID: 0}
 --- !u!1 &2281642456365694650

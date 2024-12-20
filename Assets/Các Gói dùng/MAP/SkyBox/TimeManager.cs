@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -30,9 +29,17 @@ public class TimeManager : MonoBehaviour
     private bool hasTransitionedToNight = false;
 
 
+    // Chỉnh ánh sáng
+    [SerializeField] private Light globalLight;
+    [SerializeField] private Gradient graddientNightToSunrise;
+    [SerializeField] private Gradient graddientSunriseToDay;
+    [SerializeField] private Gradient graddientDayToSunset;
+    [SerializeField] private Gradient graddientSunsetToNight;
+
     public void Update()
     {
         UpdateTimeOfDay();
+        globalLight.transform.Rotate(Vector3.up, (1f / (1440f / 4f)) * 360f * Time.deltaTime, Space.World);
     }
 
 
@@ -138,29 +145,32 @@ public class TimeManager : MonoBehaviour
             float currentBlend = RenderSettings.skybox.GetFloat("_Blend");
 
             int currentHour = currentTime.Hour;
-            int currentMinute = currentTime.Minute;
 
             if (currentHour == 5 && !hasTransitionedToSunrise)
             {
                 StartCoroutine(LerpSkybox(skyboxNight, skyboxSunrise, 10f, currentBlend));
-                hasTransitionedToSunrise = true;  // Đảm bảo rằng chỉ chuyển đổi 1 lần
+                StartCoroutine(LerpLight(graddientNightToSunrise, 10f));
+                hasTransitionedToSunrise = true;
                 hasTransitionedToDay = false;
             }
             else if (currentHour == 7 && !hasTransitionedToDay)
             {
                 StartCoroutine(LerpSkybox(skyboxSunrise, skyboxDay, 10f, currentBlend));
+                StartCoroutine(LerpLight(graddientSunriseToDay, 10f));
                 hasTransitionedToDay = true;
                 hasTransitionedToSunset = false;
             }
             else if (currentHour == 16 && !hasTransitionedToSunset)
             {
                 StartCoroutine(LerpSkybox(skyboxDay, skyboxSunset, 10f, currentBlend));
+                StartCoroutine(LerpLight(graddientDayToSunset, 10f));
                 hasTransitionedToSunset = true;
                 hasTransitionedToNight = false;
             }
             else if (currentHour == 18 && !hasTransitionedToNight)
             {
                 StartCoroutine(LerpSkybox(skyboxSunset, skyboxNight, 10f, currentBlend));
+                StartCoroutine(LerpLight(graddientSunsetToNight, 10f));
                 hasTransitionedToNight = true;
                 hasTransitionedToSunrise = false;
             }
@@ -233,31 +243,43 @@ public class TimeManager : MonoBehaviour
         isSunny = true;
         StopRain();
     }
-
-
     private void StopRain()
     {
-        rainParticleSystem.Stop(); // Dừng mưa
+        rainParticleSystem.Stop();
 
-        // Kiểm tra xem trời có đang mưa không trước khi thay đổi skybox
         if (!isRaining && !isTransitioning)
         {
             if (currentTime.Hour >= 5 && currentTime.Hour < 8)
             {
                 StartCoroutine(LerpSkybox(skyboxRainy, skyboxSunrise, 5f));
+                StartCoroutine(LerpLight(graddientNightToSunrise, 5f));
             }
             else if (currentTime.Hour >= 7 && currentTime.Hour < 16)
             {
                 StartCoroutine(LerpSkybox(skyboxRainy, skyboxDay, 5f));
+                StartCoroutine(LerpLight(graddientSunriseToDay, 5f));
             }
             else if (currentTime.Hour >= 16 && currentTime.Hour < 18)
             {
                 StartCoroutine(LerpSkybox(skyboxRainy, skyboxSunset, 5f));
+                StartCoroutine(LerpLight(graddientDayToSunset, 5f));
             }
             else if (currentTime.Hour >= 18 || currentTime.Hour < 6)
             {
                 StartCoroutine(LerpSkybox(skyboxRainy, skyboxNight, 5f));
+                StartCoroutine(LerpLight(graddientSunsetToNight, 5f));
             }
+        }
+    }
+
+
+    private IEnumerator LerpLight(Gradient lightGradient, float time)
+    {
+        for (float i = 0; i < time; i += Time.deltaTime)
+        {
+            globalLight.color = lightGradient.Evaluate(i / time);
+            RenderSettings.fogColor = globalLight.color;
+            yield return null;
         }
     }
 

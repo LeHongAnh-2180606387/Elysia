@@ -1379,10 +1379,20 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7986055718256490438, guid: 9999965e0bf51bd4dbde0bfe0258f45c,
+        type: 3}
+      propertyPath: m_Name
+      value: sliderEnergyBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 8097356627094721732, guid: 9999965e0bf51bd4dbde0bfe0258f45c,
+        type: 3}
+      propertyPath: m_Name
+      value: labEnergyBar
+      objectReference: {fileID: 0}
     - target: {fileID: 9109946469005457440, guid: 9999965e0bf51bd4dbde0bfe0258f45c,
         type: 3}
       propertyPath: m_Name
-      value: "Th\u1EC3 l\u1EF1c"
+      value: EnergyBar
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2673,10 +2683,20 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7986055718256490438, guid: 9999965e0bf51bd4dbde0bfe0258f45c,
+        type: 3}
+      propertyPath: m_Name
+      value: sliderHealthBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 8097356627094721732, guid: 9999965e0bf51bd4dbde0bfe0258f45c,
+        type: 3}
+      propertyPath: m_Name
+      value: labHealthBar
+      objectReference: {fileID: 0}
     - target: {fileID: 9109946469005457440, guid: 9999965e0bf51bd4dbde0bfe0258f45c,
         type: 3}
       propertyPath: m_Name
-      value: "M\xE1u"
+      value: HealthBar
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2881,10 +2901,20 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7986055718256490438, guid: 9999965e0bf51bd4dbde0bfe0258f45c,
+        type: 3}
+      propertyPath: m_Name
+      value: sliderShieldBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 8097356627094721732, guid: 9999965e0bf51bd4dbde0bfe0258f45c,
+        type: 3}
+      propertyPath: m_Name
+      value: labShieldBar
+      objectReference: {fileID: 0}
     - target: {fileID: 9109946469005457440, guid: 9999965e0bf51bd4dbde0bfe0258f45c,
         type: 3}
       propertyPath: m_Name
-      value: "GI\xE1p"
+      value: ShieldBar
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
