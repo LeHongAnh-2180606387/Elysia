@@ -123,6 +123,7 @@ public class Elevator : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name != "City")
         {
+            //Destroy(Player);
             uIManager.SwapSceneAtPosition("City", scenePositionSpawn.getCityFloorOnePosition());
         }
         else
@@ -132,6 +133,7 @@ public class Elevator : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name != "City")
         {
+            //Destroy(Player);
             uIManager.SwapSceneAtPosition("City", scenePositionSpawn.getCityFloorTwoPosition());
         }
         Player.transform.position = scenePositionSpawn.getCityFloorTwoPosition();
@@ -140,17 +142,21 @@ public class Elevator : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name != "City")
         {
+            //Destroy(Player);
             uIManager.SwapSceneAtPosition("City", scenePositionSpawn.getCityFloorThreePosition());
         }
         Player.transform.position = scenePositionSpawn.getCityFloorThreePosition();
     }
     public void TransformRoom()
     {
+        //Destroy(Player);
 
         uIManager.SwapSceneAtPosition("Room", scenePositionSpawn.getRoomPosition());
     }
     public void TransformTraining()
     {
+        //Destroy(Player);
+
         uIManager.SwapSceneAtPosition("Training", scenePositionSpawn.getTrainingPosition());
     }
 }

@@ -16,7 +16,7 @@ class ScenePositionSpawn
 
 
     // Room Scene
-    Vector3 roomPosition = new Vector3(-12.55f, 0, -1.392253f);
+    Vector3 roomPosition = new Vector3(-13.051f, 0f, -1.78f);
 
     public Vector3 getCityFloorOnePosition()
     {
