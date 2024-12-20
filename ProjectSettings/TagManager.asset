@@ -9,6 +9,11 @@ TagManager:
   - Health
   - Energy
   - Shield
+  - Blocks
+  - Marcador
+  - Stop
+  - NPC Support
+  - Esquina
   layers:
   - Default
   - TransparentFX
@@ -16,7 +21,7 @@ TagManager:
   - Player
   - Water
   - UI
-  - 
+  - Wall
   - 
   - 
   - 
