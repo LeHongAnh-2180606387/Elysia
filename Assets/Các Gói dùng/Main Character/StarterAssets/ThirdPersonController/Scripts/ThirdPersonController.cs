@@ -863,11 +863,11 @@ namespace StarterAssets
                 TakeDamageFromEnemy(damage); // Giảm sát thương bởi giáp
                 Debug.Log($"Damage after armor (Enemy): {damage}");
             }
-            else if (enemyTag == "boss")
+            /*else if (enemyTag == "boss")
             {
                 TakeDamageFromBoss(damage); // Giảm ít giáp hơn đối với boss
                 Debug.Log($"Damage after armor (Boss): {damage}");
-            }
+            }*/
             else
             {
                 Debug.LogWarning($"Unknown enemy tag: {enemyTag}");
@@ -987,7 +987,7 @@ namespace StarterAssets
                     foreach (var enemyCollider in enemiesInRange)
                     {
                         // Kiểm tra nếu đối tượng có tag "Enemy" hoặc "Boss"
-                        if (enemyCollider.CompareTag("Enemy") || enemyCollider.CompareTag("boss"))
+                        if (enemyCollider.CompareTag("Enemy") /*|| enemyCollider.CompareTag("boss")*/)
                         {
                             // Lấy component EnemyController từ enemy
                             EnemyController enemyHealth = enemyCollider.GetComponent<EnemyController>();

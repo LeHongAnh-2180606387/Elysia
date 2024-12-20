@@ -1,3 +1,0 @@
-Tên chứa VFX là ở folder VisualX_Studio
-
-Còn Loading Scence nằm ở Scence -> Folder Loading Scence
