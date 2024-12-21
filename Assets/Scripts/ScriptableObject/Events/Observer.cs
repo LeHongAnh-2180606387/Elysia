@@ -19,14 +19,14 @@ namespace Systems.Scriptable.Events
                 if (_instance == null)
                 {
                     _instance = Resources.Load<Observer>("GlobalObserver");
-                    if (_instance == null)
-                    {
-                        _instance = CreateInstance<Observer>();
-                        string path = "Assets/Resources/GlobalObserver.asset";
-                        AssetDatabase.CreateAsset(_instance, path);
-                        AssetDatabase.SaveAssets();
-                        AssetDatabase.Refresh();
-                    }
+                    // if (_instance == null)
+                    // {
+                    //     _instance = CreateInstance<Observer>();
+                    //     string path = "Assets/Resources/GlobalObserver.asset";
+                    //     AssetDatabase.CreateAsset(_instance, path);
+                    //     AssetDatabase.SaveAssets();
+                    //     AssetDatabase.Refresh();
+                    // }
                 }
                 return _instance;
             }

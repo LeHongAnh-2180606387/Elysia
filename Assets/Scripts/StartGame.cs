@@ -16,7 +16,7 @@ public class StartGame : MonoBehaviour
     }
     void Start()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("UiGame");
     }
     // Update is called once per frame
     void Update()

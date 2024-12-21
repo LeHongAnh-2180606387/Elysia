@@ -181,7 +181,7 @@ namespace StarterAssets
             // reset our timeouts on start
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
-            enemy = GameObject.FindWithTag("Enemy").transform;
+            //enemy = GameObject.FindWithTag("Enemy").transform;
             if (guiManager != null)
             {
                 currenthealth = guiManager.currentHealth;
