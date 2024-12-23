@@ -125,10 +125,10 @@ namespace StarterAssets
         private bool _isSprinting = false;
 
         private GUIManager guiManager;
-
+        public StatusUIManager _statusUIManager;
         //player
-        private float damagebyplayer = 50f;
-        private float armor = 10f;
+        private float damagebyplayer;
+        private float armor;
         private float currenthealth;
         private float maxHealth;
         public Image damageImage;
@@ -196,6 +196,11 @@ namespace StarterAssets
             if (audioSource != null)
             {
                 audioSource.playOnAwake = false;  // Don't play sound automatically at start
+            }
+            if (_statusUIManager != null)
+            {
+                damagebyplayer = _statusUIManager.attack;
+                armor = _statusUIManager.armor;
             }
         }
 
@@ -769,13 +774,31 @@ namespace StarterAssets
             while (guiManager.currentXP >= guiManager.xpToNextLevel) // Có thể lên nhiều level cùng lúc
             {
                 guiManager.currentXP -= guiManager.xpToNextLevel; // Trừ XP đã dùng để lên level
-                guiManager.currentXP++;
-                guiManager.currentLevel++;// Tăng level
-                guiManager.xpToNextLevel *= 1.2f;      // Tăng XP cần thiết cho level tiếp theo (ví dụ tăng 20%)
+                guiManager.currentLevel++; // Tăng level
+                guiManager.xpToNextLevel *= 1.2f; // Tăng XP cần thiết cho level tiếp theo (ví dụ tăng 20%)
+                currenthealth *= 0.1f;
+                maxHealth *= 0.1f;
+                damagebyplayer *= 0.3f;
+                armor *= 0.2f;
 
-                Debug.Log("Level Up! New Level: " + guiManager.currentXP);
+                Debug.Log("Level Up! New Level: " + guiManager.currentLevel);
+
+                // Cập nhật UI sau khi level up
+                if (guiManager != null)
+                {
+                    guiManager.currentHealth = currenthealth;
+                    guiManager.maxHealth = maxHealth;
+                    guiManager.UpdateUI(); // Gọi phương thức để cập nhật UI (thanh XP, cấp độ, v.v.)
+                }
+                if(_statusUIManager != null)
+                {
+                    _statusUIManager.attack = damagebyplayer;
+                    _statusUIManager.armor = armor;
+                    _statusUIManager.UpdateStatus();
+                }
             }
         }
+
         private void JumpAndGravity()
         {
             if (Grounded)
@@ -914,7 +937,7 @@ namespace StarterAssets
             isTakingDamage = true; // Đặt trạng thái nhận sát thương là true
             _animator.SetBool("isTakeDamage", true);
             Debug.Log("TakeDamageFromEnemy called, isTakeDamage set to true");
-
+            ApplyDamage(damage);
             // Sau một khoảng thời gian, có thể đặt lại trạng thái nhận sát thương
             StartCoroutine(ResetDamageState());
 
@@ -952,6 +975,7 @@ namespace StarterAssets
             if (guiManager != null)
             {
                 guiManager.currentHealth = currenthealth;
+                guiManager.UpdateUI();
             }
 
             // Kiểm tra nếu máu <= 0

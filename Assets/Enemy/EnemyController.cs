@@ -223,7 +223,7 @@ public class EnemyController : MonoBehaviour
 
     private IEnumerator EndAttack()
     {
-        yield return new WaitForSeconds(0.5f); // Attack duration (0.5s)
+        yield return new WaitForSeconds(0.1f); // Attack duration (0.5s)
         isAttacking = false;  // End attack state
     }
 
@@ -323,8 +323,6 @@ public class EnemyController : MonoBehaviour
     // Method to handle enemy death
     private void Die()
     {
-        Debug.Log("Enemy died");
-
         // Give XP to the player based on tag
         if (player != null)
         {
@@ -334,7 +332,6 @@ public class EnemyController : MonoBehaviour
                 if (gameObject.CompareTag("Enemy"))
                 {
                     playerController.GainXP(xpReward);
-                    Debug.Log("Player gained XP from Enemy: " + xpReward);
                 }
                 // else if (gameObject.CompareTag("boss"))
                 // {
@@ -344,8 +341,8 @@ public class EnemyController : MonoBehaviour
             }
         }
 
-        // Disable enemy after death
-        gameObject.SetActive(false);
+        // Disable enemy after death    
+        Destroy(gameObject);
     }
 
     // Trigger collision detection with player (could be used for triggering Chase state)

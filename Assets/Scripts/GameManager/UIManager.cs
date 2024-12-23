@@ -1,132 +1,186 @@
-
 using System.Collections;
 using Systems.Account.Enum;
 using Systems.Account.Manager;
-using Systems.Account.Model;
 using Systems.Hero.Manager;
-using Systems.Hero.Model;
 using Systems.Scriptable.Events;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-
 public class UIManager : MonoBehaviour
 {
-    private GameObject nameUser;
     public float timeWaiting;
-    Scene sceneNow;
+
+    // UI Elements
     public TextMeshProUGUI labPointHP;
     public TextMeshProUGUI labPointPower;
     public TextMeshProUGUI labPointEnergy;
     public TextMeshProUGUI labPointDefense;
     public TextMeshProUGUI labPointMoney;
-    public GameObject statusPanel; // Tham chiếu đến Panel của bảng trạng thái
+    public GameObject statusPanel;
 
     public TextMeshProUGUI labHealthBar;
     public TextMeshProUGUI labEnergyBar;
     public TextMeshProUGUI labShieldBar;
-    public GameObject sliderHealthBar;
-    public GameObject sliderEnergyBar;
-    public GameObject sliderShieldBar;
+    public Slider sliderHealthBar;
+    public Slider sliderEnergyBar;
+    public Slider sliderShieldBar;
 
-    public float sliderValueHealthBar;
-    public float sliderValueEnergyBar;
-    public float sliderValueShieldBar;
+    private Scene currentScene;
+    public GUIManager guiManager;
 
-    public void Start()
+    private void Start()
     {
-        sceneNow = SceneManager.GetActiveScene();
-        // StartCoroutine(StartConnectUIStatus());
-        if (sceneNow.name == "City" || sceneNow.name == "Training" || sceneNow.name == "Room")
-        {
-            labHealthBar = GameObject.Find("labHealthBar").GetComponent<TextMeshProUGUI>();
-            labEnergyBar = GameObject.Find("labEnergyBar").GetComponent<TextMeshProUGUI>();
-            labShieldBar = GameObject.Find("labShieldBar").GetComponent<TextMeshProUGUI>();
+        currentScene = SceneManager.GetActiveScene();
+        Observer.Instance.Notify("onSceneName", currentScene.name);
 
-            sliderHealthBar = GameObject.Find("sliderHealthBar");
-            sliderEnergyBar = GameObject.Find("sliderEnergyBar");
-            sliderShieldBar = GameObject.Find("sliderShieldBar");
-        }
-
+        InitializeSceneSpecificUI();
         StartCoroutine(ShowNameUser());
-        sceneNow = SceneManager.GetActiveScene();
-        Observer.Instance.Notify("onSceneName", sceneNow.name);
 
-        // Bổ sung thêm các Scene có chức năng điều khiển người chơi
-        if (sceneNow.name == "City" || sceneNow.name == "Training" || sceneNow.name == "Room")
+        if (currentScene.name == "City" || currentScene.name == "Training" || currentScene.name == "Room")
         {
             GameManager.Instance.PlayGame();
         }
-
-        // Debug.Log($"{sceneNow.name}");
-        if (sceneNow.name == "Loading Scence")
+        else if (currentScene.name == "Loading Scene")
+        {
             StartCoroutine(SwapSceneAfterLoading(timeWaiting));
-    }
-    public void FixedUpdate()
-    {
-        if (sceneNow.name == "City" || sceneNow.name == "Training" || sceneNow.name == "Room")
-        {
-            sliderValueHealthBar = (float)PlayerDataManager.Instance.health / PlayerDataManager.Instance.playerData.maxHealth;
-            sliderValueEnergyBar = (float)PlayerDataManager.Instance.energy / PlayerDataManager.Instance.playerData.maxEnergy;
-            sliderValueShieldBar = (float)PlayerDataManager.Instance.shield / PlayerDataManager.Instance.playerData.maxShield;
         }
     }
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            if (sceneNow.name == "City" || sceneNow.name == "Training" || sceneNow.name == "Room")
-            {
-                // Chuyển đổi trạng thái hoạt động của bảng trạng thái
-                statusPanel.SetActive(!statusPanel.activeSelf);
 
-                if (labPointHP == null)
-                {
-                    labPointHP = GameObject.Find("labPointHP").GetComponent<TextMeshProUGUI>();
-                    labPointPower = GameObject.Find("labPointPower").GetComponent<TextMeshProUGUI>();
-                    labPointEnergy = GameObject.Find("labPointEnergy").GetComponent<TextMeshProUGUI>();
-                    labPointDefense = GameObject.Find("labPointDefense").GetComponent<TextMeshProUGUI>();
-                    labPointMoney = GameObject.Find("labPointMoney").GetComponent<TextMeshProUGUI>();
-                }
-            }
-
-        }
-    }
-    public void LateUpdate()
+    private void FixedUpdate()
     {
-        if (sceneNow.name == "City" || sceneNow.name == "Training")
+        if (IsGameplayScene())
         {
-            if (labHealthBar != null)
-            {
-                labHealthBar.text = PlayerDataManager.Instance.health.ToString();
-                labEnergyBar.text = PlayerDataManager.Instance.energy.ToString();
-                labShieldBar.text = PlayerDataManager.Instance.shield.ToString();
-            }
-            if (sliderHealthBar != null)
-            {
-                sliderHealthBar.GetComponent<Slider>().value = sliderValueHealthBar;
-                sliderEnergyBar.GetComponent<Slider>().value = sliderValueEnergyBar;
-                sliderShieldBar.GetComponent<Slider>().value = sliderValueShieldBar;
-            }
-            if (labPointHP != null)
-            {
-                labPointHP.text = PlayerDataManager.Instance.playerData.maxHealth.ToString();
-                labPointPower.text = PlayerDataManager.Instance.playerData.attack.ToString();
-                labPointEnergy.text = PlayerDataManager.Instance.playerData.maxEnergy.ToString();
-                labPointDefense.text = PlayerDataManager.Instance.playerData.defense.ToString();
-                labPointMoney.text = PlayerDataManager.Instance.playerData.coin.ToString();
-            }
+            UpdatePlayerStats();
         }
     }
-    // Basic UI
-    public void SwapScene(string nameAfterScene)
+
+    private void Update()
     {
-        GameManager.Instance.afterScene = nameAfterScene;
-        SceneManager.LoadScene(nameAfterScene);
+        if (IsGameplayScene() && guiManager != null)
+        {
+            UpdateUIElements();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (IsGameplayScene())
+        {
+            UpdateLabelsAndSliders();
+        }
+    }
+
+    private bool IsGameplayScene()
+    {
+        return currentScene.name == "City" || currentScene.name == "Training" || currentScene.name == "Room";
+    }
+
+    private void InitializeSceneSpecificUI()
+    {
+        if (IsGameplayScene())
+        {
+            labHealthBar = FindUIElement<TextMeshProUGUI>("labHealthBar");
+            labEnergyBar = FindUIElement<TextMeshProUGUI>("labEnergyBar");
+            labShieldBar = FindUIElement<TextMeshProUGUI>("labEXPBar");
+
+            sliderHealthBar = FindUIElement<Slider>("sliderHealthBar");
+            sliderEnergyBar = FindUIElement<Slider>("sliderEnergyBar");
+            sliderShieldBar = FindUIElement<Slider>("sliderEXPBar");
+        }
+    }
+
+    private T FindUIElement<T>(string name) where T : Component
+    {
+        GameObject obj = GameObject.Find(name);
+        if (obj != null)
+        {
+            return obj.GetComponent<T>();
+        }
+        Debug.LogWarning($"UI Element '{name}' not found.");
+        return null;
+    }
+
+    private void UpdatePlayerStats()
+    {
+        var playerData = PlayerDataManager.Instance.playerData;
+        sliderHealthBar.value = PlayerDataManager.Instance.health / (float)playerData.maxHealth;
+        sliderEnergyBar.value = PlayerDataManager.Instance.energy / (float)playerData.maxEnergy;
+        sliderShieldBar.value = PlayerDataManager.Instance.shield / (float)playerData.maxShield;
+    }
+
+    private void UpdateUIElements()
+    {
+        sliderHealthBar.value = guiManager.currentHealth / guiManager.maxHealth;
+        sliderEnergyBar.value = guiManager.currentStamina / guiManager.maxStamina;
+        sliderShieldBar.value = guiManager.currentXP; // Assuming Shield is being used as XP
+
+        labHealthBar.text = guiManager.currentHealth.ToString();
+        labEnergyBar.text = guiManager.currentStamina.ToString();
+        labShieldBar.text = guiManager.currentXP.ToString();
+    }
+
+    private void UpdateLabelsAndSliders()
+    {
+        if (labPointHP != null)
+        {
+            var playerData = PlayerDataManager.Instance.playerData;
+
+            labPointHP.text = guiManager.maxHealth.ToString();
+            labPointPower.text = playerData.attack.ToString();
+            labPointEnergy.text = guiManager.maxStamina.ToString();
+            labPointDefense.text = playerData.defense.ToString();
+            labPointMoney.text = playerData.coin.ToString();
+        }
+    }
+
+    // Scene Management
+    public void SwapScene(string sceneName)
+    {
+        GameManager.Instance.afterScene = sceneName;
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public void SwapSceneWithPosition(string sceneName, Vector3 position)
+    {
+        PlayerDataManager.Instance.UpdatePlayerPositionRotation(position);
+        SwapScene(sceneName);
+    }
+
+    public void SwapSceneWithoutSaveBefore(string sceneName)
+    {
+        GameManager.Instance.afterScene = sceneName;
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public void SwapSceneWithoutSaveAfter(string sceneName)
+    {
+        GameManager.Instance.beforeScene = currentScene.name;
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public void SwapSceneLoading(string sceneName)
+    {
+        GameManager.Instance.afterScene = sceneName;
+        SceneManager.LoadScene("Loading Scene");
+    }
+
+    public IEnumerator SwapSceneAfterLoading(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadSceneAsync(GameManager.Instance.afterScene);
+    }
+
+    public IEnumerator ShowNameUser()
+    {
+        yield return new WaitForSeconds(1f);
+        var userLabel = FindUIElement<TextMeshProUGUI>("labNameUser");
+        if (userLabel != null)
+        {
+            userLabel.text = AccountManager.Instance.accountData.name;
+        }
     }
     public void SwapSceneAtPosition(string nameAfterScene, Vector3 position)
     {
@@ -134,108 +188,14 @@ public class UIManager : MonoBehaviour
         GameManager.Instance.afterScene = nameAfterScene;
         SceneManager.LoadScene(nameAfterScene);
     }
-    public void SwapSceneNoSaveBeforeScene(string nameAfterScene)
-    {
-        GameManager.Instance.afterScene = nameAfterScene;
-        SceneManager.LoadScene(nameAfterScene);
-    }
-    public void SwapSceneNoSaveAfterScene(string nameAfterScene)
-    {
-        GameManager.Instance.beforeScene = sceneNow.name;
-        SceneManager.LoadScene(nameAfterScene);
-    }
-    // Loading Scene UI
-    public void SwapSceneLoading(string nameScenceAfterLoading)
-    {
-        GameManager.Instance.afterScene = nameScenceAfterLoading;
-        SceneManager.LoadScene("Loading Scence");
-    }
-    public void SwapSceneInPlayerDataLoading()
-    {
-        string sceneName = PlayerDataManager.Instance.playerData.scence;
-        if (sceneName == null)
-        {
-            //Training là Scene cho người mới chơi
-            sceneName = "Training";
-        }
-        GameManager.Instance.afterScene = sceneName;
-        SceneManager.LoadScene("Loading Scence");
-    }
-    IEnumerator SwapSceneAfterLoading(float timeWaiting = 0)
-    {
-        yield return new WaitForSeconds(timeWaiting);
-        SceneManager.LoadSceneAsync(GameManager.Instance.afterScene);
-    }
-    // User UI
-    public IEnumerator ShowNameUser()
-    {
-        yield return new WaitForSeconds(1f);
-        nameUser = GameObject.Find("labNameUser");
 
-        if (nameUser != null)
-        {
-            TextMeshProUGUI textMeshProUGUI = nameUser.GetComponent<TextMeshProUGUI>();
-            if (textMeshProUGUI != null)
-            {
-                textMeshProUGUI.text = AccountManager.Instance.accountData.name;
-            }
-        }
-    }
-    // Play UI
-    public void PlayAnonymousAccountLogin()
-    {
-        GameManager.Instance.beforeScene = sceneNow.name;
-        GameManager.Instance.afterScene = "MenuGame";
-        AccountManager.Instance.accountService.SetAttributeAnonymousAccount();
-        SceneManager.LoadScene("MenuGame");
-    }
-
-    public void PlayAccountLogin()
-    {
-        GameManager.Instance.beforeScene = sceneNow.name;
-
-        if (SignInResult.AccountType == AccountType.Player)
-        {
-            GameManager.Instance.afterScene = "MenuGame";
-            // AccountManager.Instance.accountService.SetAttributeAccount();
-            SceneManager.LoadScene("MenuGame");
-        }
-        else
-        {
-            GameManager.Instance.afterScene = "Login";
-            SceneManager.LoadScene("Login");
-        }
-    }
-    // Login UI
-    public void LoginAnonymousAccount()
-    {
-        GameManager.Instance.afterScene = "MenuGame";
-        AccountManager.Instance.accountService.SetAttributeAnonymousAccount();
-        SceneManager.LoadScene("MenuGame");
-    }
-    public void LoginAccount()
-    {
-        //Kiểm tra xem đã đăng nhập thành công hay chưa
-        if (false)
-        {
-            GameManager.Instance.afterScene = "MenuGame";
-            AccountManager.Instance.accountService.SetAttributeAccount();
-            SceneManager.LoadScene("MenuGame");
-        }
-    }
-    // Back UI
-    public void BackScene()
-    {
-        SceneManager.LoadScene(GameManager.Instance.beforeScene);
-    }
-    // Exit UI
     public void ExitGame()
     {
 #if UNITY_EDITOR
-        Debug.Log("Thoát game trong Unity Editor!"); // Debug để kiểm tra
-        EditorApplication.isPlaying = false; // Dừng chế độ Play
+        Debug.Log("Exiting game in Unity Editor.");
+        EditorApplication.isPlaying = false;
 #else
-        Debug.Log("Thoát game!"); // Debug để kiểm tra
+        Debug.Log("Exiting game.");
         Application.Quit();
 #endif
     }

@@ -159,4 +159,5 @@ public class Elevator : MonoBehaviour
 
         uIManager.SwapSceneAtPosition("Training", scenePositionSpawn.getTrainingPosition());
     }
+     
 }
