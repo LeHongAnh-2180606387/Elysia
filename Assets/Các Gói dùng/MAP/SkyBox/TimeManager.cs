@@ -243,8 +243,6 @@ public class TimeManager : MonoBehaviour
         isSunny = true;
         StopRain();
     }
-
-
     private void StopRain()
     {
         rainParticleSystem.Stop();

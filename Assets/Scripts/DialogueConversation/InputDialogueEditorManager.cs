@@ -12,7 +12,7 @@ public class InputDialogueEditorManager : MonoBehaviour
                 ConversationManager.Instance.SelectNextOption();
             if (Input.GetKeyDown(KeyCode.S))
                 ConversationManager.Instance.SelectPreviousOption();
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.F))
                 ConversationManager.Instance.PressSelectedOption();
         }
     }

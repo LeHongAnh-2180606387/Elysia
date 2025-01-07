@@ -16,11 +16,6 @@ namespace StarterAssets
 		public bool walk;
 		public bool punch;
 		public bool kick;
-
-		// Shooter
-		public bool aim;
-		public bool shoot;
-
 		[Header("Movement Settings")]
 		public bool analogMovement;
 
@@ -67,20 +62,10 @@ namespace StarterAssets
 		{
 			KickInput(value.isPressed);
 		}
-
-        public void OnAim(InputValue value)
-        {
-			AimInput(value.isPressed);
-        }
-
-        public void OnShoot(InputValue value)
-        {
-            ShootInput(value.isPressed);
-        }
 #endif
 
 
-        public void MoveInput(Vector2 newMoveDirection)
+		public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		}
@@ -115,18 +100,7 @@ namespace StarterAssets
 		{
 			kick = newKickState;
 		}
-
-        public void AimInput(bool newAImState)
-        {
-            aim = newAImState;
-        }
-
-        public void ShootInput(bool newShootState)
-        {
-            shoot = newShootState;
-        }
-
-        private void OnApplicationFocus(bool hasFocus)
+		private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
 		}
@@ -134,17 +108,7 @@ namespace StarterAssets
 		private void SetCursorState(bool newState)
 		{
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
-			Cursor.visible = !newState;
 		}
-
-        void Update()
-        {
-			if (Input.GetKeyDown(KeyCode.Escape))
-			{
-				cursorLocked = !cursorLocked;
-				SetCursorState(!cursorLocked);
-			}  
-        }
-    }
+	}
 	
 }

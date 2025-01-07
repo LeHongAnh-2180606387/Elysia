@@ -12,16 +12,17 @@ public class DialogueEditorStart : MonoBehaviour
 
     private void OnEnable()
     {
-        //.EventStartConversation += StartConversation;
+
     }
 
     private void OnDisable()
     {
-        //.EventStartConversation -= StartConversation;
+
     }
 
     void Start()
     {
+        playerGameObject = GameObject.FindGameObjectWithTag("Player");
         playerController = playerGameObject.GetComponent<ThirdPersonController>();
     }
 
@@ -30,7 +31,7 @@ public class DialogueEditorStart : MonoBehaviour
         if (dialogueInProgress && playerController != null)
         {
             playerController.enabled = false;
-            
+
         }
     }
 
@@ -41,12 +42,10 @@ public class DialogueEditorStart : MonoBehaviour
             ConversationManager.Instance.StartConversation(conversation);
             dialogueInProgress = true;
             // Vô hiệu hóa PlayerController nếu đã tham chiếu thành công
-            /*if (playerController != null)
+            if (playerController != null)
             {
                 playerController.enabled = false;
-                playerController.canMove = false;// Vô hiệu hóa khả năng di chuyển
-                playerController.StopMovement(); // Đặt movement về 0 ngay lập tức
-            }*/
+            }
             StartCoroutine(WaitForConversationEnd());
         }
     }
@@ -64,9 +63,5 @@ public class DialogueEditorStart : MonoBehaviour
             playerController.enabled = true;
         }
     }
-    void Awake()
-    {
-        // Lấy tham chiếu đến PlayerController khi GameObject khởi động
-        playerController = playerGameObject.GetComponent<ThirdPersonController>();
-    }
+
 }
