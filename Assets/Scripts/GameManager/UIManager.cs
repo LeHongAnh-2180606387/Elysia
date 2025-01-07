@@ -43,7 +43,7 @@ public class UIManager : MonoBehaviour
         {
             GameManager.Instance.PlayGame();
         }
-        else if (currentScene.name == "Loading Scene")
+        else if (currentScene.name == "Loading Scence")
         {
             StartCoroutine(SwapSceneAfterLoading(timeWaiting));
         }
@@ -164,7 +164,7 @@ public class UIManager : MonoBehaviour
     public void SwapSceneLoading(string sceneName)
     {
         GameManager.Instance.afterScene = sceneName;
-        SceneManager.LoadScene("Loading Scene");
+        SceneManager.LoadScene("Loading Scence");
     }
 
     public IEnumerator SwapSceneAfterLoading(float delay)
