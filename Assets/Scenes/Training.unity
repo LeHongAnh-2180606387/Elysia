@@ -18156,7 +18156,7 @@ PrefabInstance:
     - target: {fileID: 6670740612801139108, guid: 2c518de698f101845aea5d446a57321d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.20000076
+      value: 0.19999778
       objectReference: {fileID: 0}
     - target: {fileID: 6670740612801139108, guid: 2c518de698f101845aea5d446a57321d,
         type: 3}
@@ -18166,7 +18166,7 @@ PrefabInstance:
     - target: {fileID: 6670740612801139108, guid: 2c518de698f101845aea5d446a57321d,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.9148445
+      value: -3.693319
       objectReference: {fileID: 0}
     - target: {fileID: 6731048547249693613, guid: 2c518de698f101845aea5d446a57321d,
         type: 3}
@@ -30503,7 +30503,12 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'Left Eye'\n\tTransform 'Middle Proximal.L'\n\tTransform
+    'LowerArm.R'\n\tTransform 'Little Distal.L'\n\tTransform 'Chest'\n\tTransform
+    'Ring Proximal.R'\n\tTransform 'root'\n\tTransform 'Thumb Proximal.L'\n\tTransform
+    'Thumb Distal.R'\n\tTransform 'Ring Intermediate.R'\n\tand more ..."
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -37660,7 +37665,7 @@ Transform:
   m_GameObject: {fileID: 1404230475150323880}
   serializedVersion: 2
   m_LocalRotation: {x: 0.28712553, y: -0.2966687, z: 0.098503724, w: -0.90545213}
-  m_LocalPosition: {x: 12.74442, y: -6.5685678, z: -3.4099016}
+  m_LocalPosition: {x: 2.0249064, y: -1.1111684, z: 3.7541718}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
